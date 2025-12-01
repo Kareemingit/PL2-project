@@ -5,7 +5,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import GymSystem.*;
 import GymSystem.Account.SRole;
-//import GymSystem.CoachSys.*;
 
 class AdminAccountsPanel extends JPanel {
     AdminPanel parent;
@@ -41,8 +40,7 @@ class AdminAccountsPanel extends JPanel {
         UserFormDialog d = new UserFormDialog(null);
         d.setVisible(true);
         if (d.saved) {
-            Account na = new Account(-1, d.username, d.password, d.role, d.name, d.email, d.phone);
-            parent.me.addAccount(na , d.extra);
+            parent.me.addAccount(-1, d.username, d.password, d.role, d.name, d.email, d.phone , d.extra);
         }
     }
     void editUser() {

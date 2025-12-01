@@ -1,7 +1,7 @@
 package GymSystem.AdminSys;
 import GymSystem.Account;
 import GymSystem.Database;
-import GymSystem.CoachSys.*;
+
 public class Admin extends Account{
     public Admin() {
         super();
@@ -14,23 +14,23 @@ public class Admin extends Account{
         super(id, username, password, SRole.ADMIN, name, email, phone);
     }
 
-    public void addAccount(Account account , String extra){
-        Database.writeAccount(account);
-        if(account.getRole() == SRole.COACH){
-            Coach newCoach = (Coach)account;
-            newCoach.setSpecialty(extra);
-            Database.writeCoach(newCoach);
+    public void addAccount(int id, String username, String password, SRole role,String name, 
+                            String email, String phone , String specialty){
+        Database.writeAccount(id , username , password , role , name , email , phone);
+        if(role == SRole.COACH){
         }
-        else if(account.getRole() == SRole.MEMBER){
-
+        else if(role == SRole.MEMBER){
+            
         }
-        else if(account.getRole() == SRole.USER){
+        else if(role == SRole.USER){
 
         }
     }
 
     public void addCoach(){
-        
     }
+
+    public void addMember(){
+    } 
 
 }

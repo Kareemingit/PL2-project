@@ -45,16 +45,17 @@ public class Database {
         return accounts;
     }
     
-    public static void writeAccount(Account account){
+    public static void writeAccount(int id, String username, String password, SRole role,
+               String name, String email, String phone){
         Path p = DATA_DIR.resolve("Account.csv");
-        int accId = account.id;
-        if(account.id == -1){
+        int accId = id;
+        if(id == -1){
             ArrayList<Account> accounts = readAccounts();
             int maxId = accounts.stream().mapToInt(a->a.getId()).max().orElse(0);
             accId = maxId + 1;
         }
-        String[] header = { String.valueOf(accId), escape(account.username), 
-            escape(account.password), account.role.name(), escape(account.name), escape(account.email), escape(account.phone)};
+        String[] header = { String.valueOf(accId), escape(username), 
+            escape(password), role.name(), escape(name), escape(email), escape(phone)};
         
         try { 
             BufferedWriter writer = new BufferedWriter(new FileWriter(p.toString()));
@@ -68,13 +69,15 @@ public class Database {
         return null;
     }
 
-    public static void writeCoach(Coach coach){
+    public static void writeCoach(){
     }
 
     public static ArrayList<Member> readMembers(){
         return null;
     }
 
-    public static void writeMember(Member member){
+    public static void writeMember(){
     }
+
+
 }
