@@ -41,10 +41,10 @@ public class LoginFrame extends JFrame {
         txtUser.addActionListener(e->txtPass.requestFocusInWindow());
     }
     
-    Account authenticate(String username , String password){
-        ArrayList<Account> accounts = Database.readAccounts();
-        for (Account account : accounts) {
-            if(account.username.equals(username) && account.password.equals(password))
+    ArrayList<String> authenticate(String username , String password){
+        ArrayList<ArrayList<String>> accounts = Database.readAccounts();
+        for (ArrayList<String> account : accounts) {
+            if(account.get(1).equals(username) && account.get(2).equals(password))
                 return account;
         }
         return null;
@@ -57,12 +57,13 @@ public class LoginFrame extends JFrame {
             JOptionPane.showMessageDialog(this, "Enter username and password"); 
             return; 
         }
-        Account a = authenticate(un, pw);
+        ArrayList<String> a = authenticate(un, pw);
         if (a == null) { JOptionPane.showMessageDialog(this, "Invalid credentials"); return; }
-        SRole accountRole = a.role;
+        SRole accountRole = SRole.valueOf(a.get(3));
         switch (accountRole) {
             case ADMIN:
-                Admin admin = new Admin(a.id , a.username , a.password , a.name , a.email , a.phone);
+                Admin admin = new Admin(Integer.parseInt(a.get(0)) , a.get(1) , a.get(2) , a.get(3) , 
+                    a.get(4) , a.get(5));
                 AdminPanel p = new AdminPanel(admin);
                 p.setVisible(true);
                 break;

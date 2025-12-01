@@ -3,8 +3,6 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 import GymSystem.Account.SRole;
-import GymSystem.CoachSys.*;
-import GymSystem.MemberSys.*;
 
 public class Database {
     private static final Path DATA_DIR = Paths.get("data");
@@ -19,60 +17,78 @@ public class Database {
 
     private static String escape(String s) {
         if (s==null) return "";
-        // naive escape: replace newlines and commas
         return s.replace("\n"," ").replace("\r"," ").replace(",",";");
     }
 
-    public static ArrayList<Account> readAccounts(){
+    public static ArrayList<ArrayList<String>> readAccounts() {
         Path p = DATA_DIR.resolve("Account.csv");
-        ArrayList<Account> accounts = new ArrayList<>();
+        ArrayList<ArrayList<String>> accounts = new ArrayList<>();
+
         try {
             List<String> lines = Files.readAllLines(p);
             for (String line : lines) {
                 if (line.trim().isEmpty()) continue;
-                String[] f = splitCSV(line);
-                int id = Integer.parseInt(f[0]);
-                String username = f[1] , password = f[2];
-                SRole role = Account.SRole.valueOf(f[3].trim().toUpperCase());
-                String name = f.length > 4 ? f[4] : "";
-                String email = f.length > 5 ? f[5] : "";
-                String phone = f.length > 6 ? f[6] : "";
-                accounts.add(new Account(id, username, password, role, name, email, phone));
+
+                ArrayList<String> record = new ArrayList<>();
+                String[] accountData = line.split(",");
+
+                for (String data : accountData) {
+                    record.add(data.trim());
+                }
+
+                accounts.add(record);
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return accounts;
     }
     
     public static void writeAccount(int id, String username, String password, SRole role,
-               String name, String email, String phone){
+                                    String name, String email, String phone) {
         Path p = DATA_DIR.resolve("Account.csv");
-        int accId = id;
-        if(id == -1){
-            ArrayList<Account> accounts = readAccounts();
-            int maxId = accounts.stream().mapToInt(a->a.getId()).max().orElse(0);
-            accId = maxId + 1;
+        if (id < 0) {
+            ArrayList<ArrayList<String>> all = readAccounts();
+            int maxId = -1;
+
+            for (ArrayList<String> row : all) {
+                if (row.isEmpty()) continue;
+
+                try {
+                    int rowId = Integer.parseInt(row.get(0));
+                    if (rowId > maxId) maxId = rowId;
+                } catch (NumberFormatException ignored) {}
+            }
+
+            id = maxId + 1;
         }
-        String[] header = { String.valueOf(accId), escape(username), 
-            escape(password), role.name(), escape(name), escape(email), escape(phone)};
-        
-        try { 
-            BufferedWriter writer = new BufferedWriter(new FileWriter(p.toString()));
-            writer.write(String.join(",", header));
+        String[] row = {
+            String.valueOf(id),
+            escape(username),
+            escape(password),
+            role.name(),
+            escape(name),
+            escape(email),
+            escape(phone)
+        };
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(p.toString(), true))) {
+            writer.write(String.join(",", row));
             writer.newLine();
-            writer.close();
-        } catch (IOException e) { e.printStackTrace(); }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public static ArrayList<Coach> readCoachs(){
+    public static ArrayList<ArrayList<String>> readCoachs(){
         return null;
     }
 
     public static void writeCoach(){
     }
 
-    public static ArrayList<Member> readMembers(){
+    public static ArrayList<ArrayList<String>> readMembers(){
         return null;
     }
 

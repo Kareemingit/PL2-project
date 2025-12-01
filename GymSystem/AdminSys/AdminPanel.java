@@ -32,9 +32,19 @@ class AdminAccountsPanel extends JPanel {
 
     void refresh() {
         model.setRowCount(0);
-        ArrayList<Account> accounts = Database.readAccounts();
-        for (Account u: accounts) 
-            model.addRow(new Object[]{u.getId(), u.getName(), u.getRole().name(), u.getUsername(), u.getEmail(), u.getPhone()});
+
+        ArrayList<ArrayList<String>> accounts = Database.readAccounts();
+
+        for (ArrayList<String> u : accounts) {
+            model.addRow(new Object[]{
+                u.get(0), // id
+                u.get(4), // name
+                u.get(3), // role
+                u.get(1), // username
+                u.get(5), // email
+                u.get(6)  // phone
+            });
+        }
     }
     void addAccount() {
         UserFormDialog d = new UserFormDialog(null);
