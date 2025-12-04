@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="GymSystemUi">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/GymSystemUi.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

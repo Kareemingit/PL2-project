@@ -70,19 +70,29 @@ public class Database {
         Path p = DATA_DIR.resolve("coaches.csv");
         ArrayList<ArrayList<String>> coaches = new ArrayList<>();
         try {
+            if (!Files.exists(p)){
+                System.err.println("Warning: coaches.csv file not found. Returning empty list.");
+                return coaches;
+            }
             List<String> lines = Files.readAllLines(p);
             for (String line : lines) {
                 if (line.trim().isEmpty()) continue;
 
                 ArrayList<String> record = new ArrayList<>();
                 String[] coachData = line.split(",");
+                if(coachData.length<3){
+                    System.err.println("Error: Skipping incomplete coach record: " + line);
+                continue;
+                }
                 for (String data : coachData) {
                     record.add(data.trim());
                 }
                 coaches.add(record);
             }
 
-        } catch (IOException e) {e.printStackTrace();}
+        } catch (IOException e) {
+            System.err.println("Error reading coaches.csv: " + e.getMessage());
+            e.printStackTrace();}
 
         return coaches;
     }
