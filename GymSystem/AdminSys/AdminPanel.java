@@ -46,11 +46,13 @@ class AdminAccountsPanel extends JPanel {
             });
         }
     }
+    
     void addAccount() {
         UserFormDialog d = new UserFormDialog(null);
         d.setVisible(true);
         if (d.saved) {
             parent.me.addAccount(-1, d.username, d.password, d.role, d.name, d.email, d.phone , d.extra);
+            refresh();
         }
     }
     void editUser() {
@@ -170,6 +172,15 @@ class AdminCoachesPanel extends JPanel {
         add(new JScrollPane(tbl), BorderLayout.CENTER);
     }
     void refresh() {
+        model.setRowCount(0);
+        ArrayList<ArrayList<String>> coaches = Database.readCoachs();
+        for (ArrayList<String> c: coaches) {
+            model.addRow(new Object[]{
+                c.get(0),
+                c.get(1),
+                c.get(2), 
+                c.get(3),});
+        }
     }
     void addCoach() {
     }

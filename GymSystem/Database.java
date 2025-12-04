@@ -49,21 +49,6 @@ public class Database {
     public static void writeAccount(int id, String username, String password, SRole role,
                                     String name, String email, String phone) {
         Path p = DATA_DIR.resolve("Account.csv");
-        if (id < 0) {
-            ArrayList<ArrayList<String>> all = readAccounts();
-            int maxId = -1;
-
-            for (ArrayList<String> row : all) {
-                if (row.isEmpty()) continue;
-
-                try {
-                    int rowId = Integer.parseInt(row.get(0));
-                    if (rowId > maxId) maxId = rowId;
-                } catch (NumberFormatException ignored) {}
-            }
-
-            id = maxId + 1;
-        }
         String[] row = {
             String.valueOf(id),
             escape(username),
@@ -82,10 +67,41 @@ public class Database {
     }
 
     public static ArrayList<ArrayList<String>> readCoachs(){
-        return null;
+        Path p = DATA_DIR.resolve("coaches.csv");
+        ArrayList<ArrayList<String>> coaches = new ArrayList<>();
+        try {
+            List<String> lines = Files.readAllLines(p);
+            for (String line : lines) {
+                if (line.trim().isEmpty()) continue;
+
+                ArrayList<String> record = new ArrayList<>();
+                String[] coachData = line.split(",");
+                for (String data : coachData) {
+                    record.add(data.trim());
+                }
+                coaches.add(record);
+            }
+
+        } catch (IOException e) {e.printStackTrace();}
+
+        return coaches;
     }
 
-    public static void writeCoach(){
+    public static void writeCoach(int CoachId , int accountID, String name, String specialty){
+        Path p = DATA_DIR.resolve("coaches.csv");
+
+        String[] row = {
+            String.valueOf(CoachId),
+            String.valueOf(accountID),
+            escape(name),
+            escape(specialty)
+        };
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(p.toString(), true))) {
+            writer.write(String.join(",", row));
+            writer.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static ArrayList<ArrayList<String>> readMembers(){
