@@ -116,7 +116,7 @@ class AdminMembersPanel extends JPanel {
     public AdminMembersPanel(AdminPanel p) {
         this.parent = p;
         setLayout(new BorderLayout());
-        model = new DefaultTableModel(new Object[]{"ID","UserID","Name","SubscriptionEnd","Coach"},0){ public boolean isCellEditable(int r,int c){return false;} };
+        model = new DefaultTableModel(new Object[]{"ID","Account ID","Name","SubscriptionEnd","Coach"},0){ public boolean isCellEditable(int r,int c){return false;} };
         tbl = new JTable(model);
         refresh();
 
@@ -126,13 +126,25 @@ class AdminMembersPanel extends JPanel {
         JButton btnDelete = new JButton("Delete Member"); btnDelete.addActionListener(e->deleteMember());
         JButton btnSearch = new JButton("Search"); btnSearch.addActionListener(e->searchMember());
         JButton btnAssign = new JButton("Assign Coach"); btnAssign.addActionListener(e->assignCoach());
-        top.add(btnAdd); top.add(btnEdit); top.add(btnDelete); top.add(btnSearch); top.add(btnAssign);
+        JButton btnRefresh = new JButton("Refresh"); btnRefresh.addActionListener(e->refresh());
+        top.add(btnAdd); top.add(btnEdit); top.add(btnDelete); top.add(btnSearch); top.add(btnAssign); top.add(btnRefresh);
 
         add(top, BorderLayout.NORTH);
         add(new JScrollPane(tbl), BorderLayout.CENTER);
     }
 
     void refresh() {
+        model.setRowCount(0);
+        ArrayList<ArrayList<String>> members = Database.readMembers();
+        for (ArrayList<String> u : members) {
+            model.addRow(new Object[]{
+                u.get(0), // id
+                u.get(1), // account id
+                u.get(2), // name
+                u.get(3), // SubscriptionEnd
+                u.get(4) // coach id
+            });
+        }
     }
 
     void addMember() {
@@ -157,7 +169,7 @@ class AdminCoachesPanel extends JPanel {
     public AdminCoachesPanel(AdminPanel p) {
         this.parent = p;
         setLayout(new BorderLayout());
-        model = new DefaultTableModel(new Object[]{"ID","UserID","Name","Specialty","Email"},0){ public boolean isCellEditable(int r,int c){return false;} };
+        model = new DefaultTableModel(new Object[]{"ID","Account ID","Name","Specialty","Email"},0){ public boolean isCellEditable(int r,int c){return false;} };
         tbl = new JTable(model);
         refresh();
 

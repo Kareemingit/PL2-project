@@ -105,11 +105,40 @@ public class Database {
     }
 
     public static ArrayList<ArrayList<String>> readMembers(){
-        return null;
+        Path p = DATA_DIR.resolve("members.csv");
+        ArrayList<ArrayList<String>> members = new ArrayList<>();
+        try {
+            List<String> lines = Files.readAllLines(p);
+            for (String line : lines) {
+                if (line.trim().isEmpty()) continue;
+                ArrayList<String> record = new ArrayList<>();
+                String[] memberData = line.split(",");
+                for (String data : memberData) {
+                    record.add(data);
+                }
+                members.add(record);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return members;
     }
 
-    public static void writeMember(){
+    public static void writeMember(int MemberId , int accountId , String name, String endData , int CoachId){
+        Path p = DATA_DIR.resolve("members.csv");
+        String[] row = {
+            String.valueOf(MemberId),
+            String.valueOf(accountId),
+            escape(name),
+            escape(endData),
+            String.valueOf(CoachId)
+        };
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(p.toString(), true))) {
+            writer.write(String.join(",", row));
+            writer.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-
 
 }

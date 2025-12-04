@@ -1,4 +1,6 @@
 package GymSystem.AdminSys;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import GymSystem.Account;
@@ -49,7 +51,18 @@ public class Admin extends Account{
             addCoach(maxId + 1, id, name, specialty);
         }
         else if(role == SRole.MEMBER){
-            
+            ArrayList<ArrayList<String>> all = Database.readMembers();
+            int maxId = -1;
+
+            for (ArrayList<String> row : all) {
+                if (row.isEmpty()) continue;
+
+                try {
+                    int rowId = Integer.parseInt(row.get(0));
+                    if (rowId > maxId) maxId = rowId;
+                } catch (NumberFormatException ignored) {}
+            }
+            addMember(maxId + 1 , id , name , 0);
         }
         else if(role == SRole.USER){
 
@@ -60,7 +73,9 @@ public class Admin extends Account{
         Database.writeCoach(CoachId, accountId, name, specialty);
     }
 
-    public void addMember(){
+    public void addMember(int MemberId , int accountId , String Mname , int CoachId){
+        DateTimeFormatter DATE_FMT = DateTimeFormatter.ISO_LOCAL_DATE;
+        Database.writeMember(MemberId, accountId, Mname , LocalDate.now().plusDays(10).format(DATE_FMT) , CoachId);
     } 
 
 }
