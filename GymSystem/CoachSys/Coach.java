@@ -1,5 +1,9 @@
 package GymSystem.CoachSys;
 import GymSystem.Account;
+import GymSystem.SystemEntity;
+import GymSystem.Database;
+import GymSystem.SystemEntity;
+import java.time.LocalDate;
 
 public class Coach extends Account{
     private int CoachId;

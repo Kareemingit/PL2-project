@@ -3,6 +3,12 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 import GymSystem.Account.SRole;
+import GymSystem.CoachSys.Coach;
+import GymSystem.MemberSys.Member;
+
+//public static void writeMemberPlan(Member plan){
+
+
 
 public class Database {
     private static final Path DATA_DIR = Paths.get("data");
@@ -15,7 +21,7 @@ public class Database {
         return parts;
     }
 
-    private static String escape(String s) {
+    public static String escape(String s) {
         if (s==null) return "";
         return s.replace("\n"," ").replace("\r"," ").replace(",",";");
     }
