@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.nio.file.*;
 
 public class GymManagmentSystem {
-    static final Path DATA_DIR = Paths.get("data");
-    static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ISO_LOCAL_DATE;
+    public static final Path DATA_DIR = Paths.get("data");
+    public static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ISO_LOCAL_DATE;
 
     public static void main(String[] args) {
         try {
