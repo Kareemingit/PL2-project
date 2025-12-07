@@ -21,9 +21,9 @@ class AdminAccountsPanel extends JPanel {
 
         JPanel top = new JPanel();
         JButton btnAdd = new JButton("Add Account"); btnAdd.addActionListener(e->addAccount());
-        JButton btnEdit = new JButton("Edit Account"); btnEdit.addActionListener(e->editUser());
-        JButton btnDelete = new JButton("Delete Account"); btnDelete.addActionListener(e->deleteUser());
-        JButton btnSearch = new JButton("Search"); btnSearch.addActionListener(e->searchUser());
+        JButton btnEdit = new JButton("Edit Account"); btnEdit.addActionListener(e->editAccount());
+        JButton btnDelete = new JButton("Delete Account"); btnDelete.addActionListener(e->deleteAccount());
+        JButton btnSearch = new JButton("Search"); btnSearch.addActionListener(e->searchAccount());
         top.add(btnAdd); top.add(btnEdit); top.add(btnDelete); top.add(btnSearch);
 
         add(top, BorderLayout.NORTH);
@@ -55,11 +55,11 @@ class AdminAccountsPanel extends JPanel {
             refresh();
         }
     }
-    void editUser() {
+    void editAccount() {
     }
-    void deleteUser() {
+    void deleteAccount() {
     }
-    void searchUser() {
+    void searchAccount() {
     }
 }
 
@@ -194,7 +194,14 @@ class AdminCoachesPanel extends JPanel {
                 c.get(3),});
         }
     }
+    
     void addCoach() {
+        String name = JOptionPane.showInputDialog(this, "Full name:");
+        if (name==null) name="";
+        String specialty = JOptionPane.showInputDialog(this, "Specialty:");
+        if (specialty==null) specialty="";
+        parent.me.addCoach(-1, -1, name, specialty);        
+        refresh();
     }
     void editCoach() {
     }

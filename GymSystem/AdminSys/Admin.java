@@ -2,7 +2,6 @@ package GymSystem.AdminSys;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-
 import GymSystem.Account;
 import GymSystem.Database;
 
@@ -37,6 +36,15 @@ public class Admin extends Account{
         }
         Database.writeAccount(id , username , password , role , name , email , phone);
         if(role == SRole.COACH){
+            addCoach(-1, id, name, specialty);
+        }
+        else if(role == SRole.MEMBER){
+            addMember(-1, id , name , 0);
+        }
+    }
+
+    public void addCoach(int CoachId , int accountId , String name , String specialty){
+        if(CoachId < 0){
             ArrayList<ArrayList<String>> all = Database.readCoachs();
             int maxId = -1;
 
@@ -48,9 +56,14 @@ public class Admin extends Account{
                     if (rowId > maxId) maxId = rowId;
                 } catch (NumberFormatException ignored) {}
             }
-            addCoach(maxId + 1, id, name, specialty);
+            CoachId = maxId + 1;
         }
-        else if(role == SRole.MEMBER){
+        Database.writeCoach(CoachId, accountId, name, specialty);
+    }
+
+    public void addMember(int MemberId , int accountId , String Mname , int CoachId){
+        DateTimeFormatter DATE_FMT = DateTimeFormatter.ISO_LOCAL_DATE;
+        if(MemberId < 0){
             ArrayList<ArrayList<String>> all = Database.readMembers();
             int maxId = -1;
 
@@ -62,20 +75,8 @@ public class Admin extends Account{
                     if (rowId > maxId) maxId = rowId;
                 } catch (NumberFormatException ignored) {}
             }
-            addMember(maxId + 1 , id , name , 0);
+            MemberId = maxId + 1;
         }
-        else if(role == SRole.USER){
-
-        }
-    }
-
-    public void addCoach(int CoachId , int accountId , String name , String specialty){
-        Database.writeCoach(CoachId, accountId, name, specialty);
-    }
-
-    public void addMember(int MemberId , int accountId , String Mname , int CoachId){
-        DateTimeFormatter DATE_FMT = DateTimeFormatter.ISO_LOCAL_DATE;
         Database.writeMember(MemberId, accountId, Mname , LocalDate.now().plusDays(10).format(DATE_FMT) , CoachId);
-    } 
-
+    }
 }
