@@ -1,62 +1,36 @@
 package GymSystem.UserSys;
 
-import GymSystem.LoginFrame;
-import javax.swing.*;
-import java.awt.*;
+public class User {
+    private int id;
+    private String username;
+    private String password;
+    private String name;
+    private String email;
+    private String phone;
 
-public class UserPanel extends JFrame {
-    private User currentUser;
-
-    public UserPanel(User user) {
-        this.currentUser = user;
-
-        setTitle("User - " + currentUser.getUsername());
-        setSize(400, 300);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout());
-
-        add(new JLabel("Welcome, " + currentUser.getName(), SwingConstants.CENTER), BorderLayout.CENTER);
-
-        JPanel top = new JPanel(new BorderLayout());
-        top.add(new JLabel("  Logged in as: " + currentUser.getUsername()), BorderLayout.WEST);
-        
-        JButton btnLogout = new JButton("Logout");
-        btnLogout.addActionListener(e -> logout());
-        top.add(btnLogout, BorderLayout.EAST);
-        add(top, BorderLayout.NORTH);
-
-        JButton btnEdit = new JButton("Update info");
-        btnEdit.addActionListener(e -> updateInfo());
-        add(btnEdit, BorderLayout.SOUTH);
+    public User(int id, String username, String password, String name, String email, String phone) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
     }
 
-    private void updateInfo() {
-        String newUsername = JOptionPane.showInputDialog(this, "Enter new username:", currentUser.getUsername());
-        String newPassword = JOptionPane.showInputDialog(this, "Enter new password:", currentUser.getPassword());
-        String newName     = JOptionPane.showInputDialog(this, "Enter new name:", currentUser.getName());
-        String newEmail    = JOptionPane.showInputDialog(this, "Enter new email:", currentUser.getEmail());
-        String newPhone    = JOptionPane.showInputDialog(this, "Enter new phone:", currentUser.getPhone());
+    public int getId() { return id; }
+    public String getUsername() { return username; }
+    public String getPassword() { return password; }
+    public String getName() { return name; }
+    public String getEmail() { return email; }
+    public String getPhone() { return phone; }
 
-        if(newUsername != null && newPassword != null && newName != null && newEmail != null && newPhone != null) {
-            currentUser.updateInformation(newUsername, newPassword, newName, newEmail, newPhone);
-            JOptionPane.showMessageDialog(this, "Information updated successfully!");
-            
-            setTitle("User - " + newUsername);
-            revalidate();
-            repaint();
-        }
-    }
-
-    private void logout() {
-        this.dispose();
+    public void updateInformation(String username, String password, String name, String email, String phone) {
+        if (username != null && !username.isEmpty()) this.username = username;
+        if (password != null && !password.isEmpty()) this.password = password;
+        if (name != null && !name.isEmpty()) this.name = name;
+        if (email != null && !email.isEmpty()) this.email = email;
+        if (phone != null && !phone.isEmpty()) this.phone = phone;
         
-        SwingUtilities.invokeLater(() -> {
-            try {
-                new LoginFrame().setVisible(true); 
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "LoginFrame not found! \nError: " + ex.getMessage());
-            }
-        });
+        System.out.println("User info updated for ID: " + this.id);
     }
 }
