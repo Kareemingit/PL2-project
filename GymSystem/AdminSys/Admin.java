@@ -79,4 +79,73 @@ public class Admin extends Account{
         }
         Database.writeMember(MemberId, accountId, Mname , LocalDate.now().plusDays(10).format(DATE_FMT) , CoachId);
     }
+    
+    public void editAccount(int id, String username, String password, SRole role,String name, String email, String phone) {
+        Database.updateAccount(id, username, password, role, name, email, phone);
+    }
+
+    public void deleteAccountCascade(int accountId, SRole role) {
+        if (role == SRole.ADMIN) {
+            throw new IllegalStateException("Admin accounts cannot be deleted");
+        }
+        if (role == SRole.MEMBER) {
+            Database.deleteMemberByAccountId(accountId);
+        }
+
+        if (role == SRole.COACH) {
+            Database.deleteCoachByAccountId(accountId);
+        }
+
+        Database.deleteAccountById(accountId);
+    }
+
+    public void editCoach(int coachId, int accountId, String name, String specialty) {
+        Database.updateCoach(coachId, accountId, name, specialty);
+    }
+
+    public void editMember(int memberId, int accountId,String name, String endDate, int coachId) {
+        Database.updateMember(memberId, accountId, name, endDate, coachId);
+    }
+
+    public void deleteMemberCascade(int memberId, int accountId) {
+
+        Database.deleteMemberById(memberId);
+
+        if (accountId > 0 && Database.accountExists(accountId)) {
+            Database.deleteAccountById(accountId);
+        }
+    }
+
+    public void assignCoachToMember(int memberId, int accountId,String name, String endDate, int coachId) {
+        Database.updateMember(memberId, accountId, name, endDate, coachId);
+    }
+
+    public void deleteCoachCascade(int coachId) {
+        Database.unassignCoachFromMembers(coachId);
+        Database.deleteCoachById(coachId);
+    }
+
+    public void addBilling(int billID ,int memberId, double amount, String date, String note) {
+        ArrayList<ArrayList<String>> billings = Database.readBillings();
+        int maxId = billID;
+        if(billID <= 0){
+            for (ArrayList<String> b : billings) {
+                int id = Integer.parseInt(b.get(0));
+                if (id > maxId) maxId = id;
+            }
+        }
+        int billingId = maxId + 1;
+
+        Database.writeBilling(
+                billingId,
+                memberId,
+                amount,
+                date,
+                note
+        );
+    }
+
+    public void deleteBilling(int billingId) {
+        Database.deleteBillingById(billingId);
+    }
 }
