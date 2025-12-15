@@ -3,6 +3,8 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 import GymSystem.Account.SRole;
+import GymSystem.CoachSys.MemberPlan;
+import GymSystem.CoachSys.Message;
 
 public class Database {
     private static final Path DATA_DIR = Paths.get("data");
@@ -143,5 +145,69 @@ public class Database {
 
     public static ArrayList<String> findAccountByUsername(String username) {
         return readAccounts().stream().filter(u -> u.size() > 1 && u.get(1).equals(username)).findFirst().orElse(null);
+    }
+
+    public static void writeMemberPlan(MemberPlan plan) {
+        Path p = Database.DATA_DIR.resolve("schedules.csv");
+        int id = plan.getPlanId();
+
+        try {
+            if (id <= 0) {
+                int maxId = 0;
+                if (Files.exists(p)) {
+                    List<String> lines = Files.readAllLines(p);
+                    for (String line : lines) {
+                        if (line.trim().isEmpty()) continue;
+                        try {
+                            int rowId = Integer.parseInt(line.split(",")[0].trim());
+                            if (rowId > maxId) maxId = rowId;
+                        } catch (NumberFormatException | ArrayIndexOutOfBoundsException ignored) {}
+                    }
+                }
+                id = maxId + 1;
+                plan.setPlanId(id);
+            }
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(p.toFile(), true))) {
+                writer.write(plan.objToCsv());
+                writer.newLine();
+            }
+
+        } catch (IOException e) {
+            System.err.println("Error writing plan: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public static void writeMessage(Message message) {
+        Path p = Database.DATA_DIR.resolve("messages.csv");
+        int id = message.getMssgId();
+
+        try {
+            if (id <= 0) {
+                int maxId = 0;
+                if (Files.exists(p)) {
+                    List<String> lines = Files.readAllLines(p);
+                    for (String line : lines) {
+                        if (line.trim().isEmpty()) continue;
+                        try {
+                            int rowId = Integer.parseInt(line.split(",")[0].trim());
+                            if (rowId > maxId) maxId = rowId;
+                        } catch (NumberFormatException | ArrayIndexOutOfBoundsException ignored) {}
+                    }
+                }
+                id = maxId + 1;
+                message.setMssgId(id);
+            }
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(p.toFile(), true))) {
+                writer.write(message.toCSVstring());
+                writer.newLine();
+            }
+
+        } catch (IOException e) {
+            System.err.println("Error writing message: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

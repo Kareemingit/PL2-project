@@ -5,6 +5,8 @@ import java.util.*;
 import GymSystem.Account.SRole;
 import GymSystem.AdminSys.Admin;
 import GymSystem.AdminSys.AdminPanel;
+import GymSystem.CoachSys.Coach;
+import GymSystem.CoachSys.CoachPanel;
 
 public class LoginFrame extends JFrame {
     JTextField txtUser;
@@ -68,11 +70,30 @@ public class LoginFrame extends JFrame {
                 p.setVisible(true);
                 break;
             case COACH:
-                //CoachPanel p = new CoachPanel();
-            case MEMBER:
-                //MemberPanel p = new MemberPanel();
+                ArrayList<ArrayList<String>> coaches = Database.readCoachs();
+                ArrayList<String> coachData = coaches.stream()
+                        .filter(c -> c.size() > 1 && c.get(1).equals(a.get(0)))
+                        .findFirst().orElse(null);
+
+                if (coachData != null) {
+                    int coachId = Integer.parseInt(coachData.get(0));
+                    String specialty = coachData.get(3);
+
+                    GymSystem.CoachSys.Coach coach = new GymSystem.CoachSys.Coach(
+                            Integer.parseInt(a.get(0)), a.get(1), a.get(2), a.get(4), a.get(5), a.get(6),
+                            coachId, specialty
+                    );
+
+                    GymSystem.CoachSys.CoachPanel cp = new GymSystem.CoachSys.CoachPanel(coach);
+                    cp.setVisible(true);
+                    this.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Coach data not found.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+                break;            case MEMBER:
+                //MemberPanel mp = new MemberPanel();
             case USER:
-                //UserPanel p = new UserPanel();
+                //UserPanel up = new UserPanel();
             default:
                 break;
         }

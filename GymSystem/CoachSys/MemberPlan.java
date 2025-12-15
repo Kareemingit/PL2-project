@@ -4,6 +4,10 @@ import GymSystem.SystemEntity;
 import GymSystem.GymManagmentSystem;
 import GymSystem.Database;
 
+//====================================================
+//==============تم الانتهاء============================
+//====================================================
+
 public class MemberPlan extends SystemEntity {
     private int planId;
     private int coachId;
@@ -12,7 +16,8 @@ public class MemberPlan extends SystemEntity {
     private LocalDate endDate;
     private String planDetails;
 
-    public MemberPlan(int planId, int coachId,int memberId,LocalDate endDate,String planDetails){
+    public MemberPlan(int planId, int coachId,int memberId,
+                      LocalDate startDate,LocalDate endDate,String planDetails){
         this.planId = planId;
         this.coachId = coachId;
         this.memberId = memberId;
