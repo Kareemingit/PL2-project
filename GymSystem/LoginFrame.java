@@ -5,6 +5,7 @@ import java.util.*;
 import GymSystem.Account.SRole;
 import GymSystem.AdminSys.Admin;
 import GymSystem.AdminSys.AdminPanel;
+import GymSystem.UserSys.*;
 
 public class LoginFrame extends JFrame {
     JTextField txtUser;
@@ -62,17 +63,21 @@ public class LoginFrame extends JFrame {
         SRole accountRole = SRole.valueOf(a.get(3));
         switch (accountRole) {
             case ADMIN:
-                Admin admin = new Admin(Integer.parseInt(a.get(0)) , a.get(1) , a.get(2) , a.get(3) , 
-                    a.get(4) , a.get(5));
-                AdminPanel p = new AdminPanel(admin);
-                p.setVisible(true);
+                Admin admin = new Admin(Integer.parseInt(a.get(0)) , a.get(1) , a.get(2) , a.get(4) , 
+                    a.get(5) , a.get(6));
+                AdminPanel ap = new AdminPanel(admin);
+                ap.setVisible(true);
                 break;
             case COACH:
                 //CoachPanel p = new CoachPanel();
             case MEMBER:
                 //MemberPanel p = new MemberPanel();
             case USER:
-                //UserPanel p = new UserPanel();
+                User user = new User(Integer.parseInt(a.get(0)) , a.get(1) , a.get(2) , a.get(4) ,
+                    a.get(5) , a.get(6)
+                );
+                UserPanel up = new UserPanel(user);
+                up.setVisible(true);
             default:
                 break;
         }

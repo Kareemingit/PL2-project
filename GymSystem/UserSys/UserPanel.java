@@ -1,6 +1,7 @@
 package GymSystem.UserSys;
 
-import GymSystem.GUI.LoginFrame; // تعديل المسار ليقرأ من فولدر GUI
+//import GymSystem.GUI.LoginFrame; // تعديل المسار ليقرأ من فولدر GUI
+import GymSystem.LoginFrame;
 import javax.swing.*;
 import java.awt.*;
 
