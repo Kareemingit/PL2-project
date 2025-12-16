@@ -71,17 +71,20 @@ public class Database {
     public static ArrayList<ArrayList<String>> readCoachs(){
         Path p = DATA_DIR.resolve("coaches.csv");
         ArrayList<ArrayList<String>> coaches = new ArrayList<>();
+        if (!Files.exists(p)) return coaches;
         try {
             List<String> lines = Files.readAllLines(p);
             for (String line : lines) {
                 if (line.trim().isEmpty()) continue;
-
-                ArrayList<String> record = new ArrayList<>();
                 String[] coachData = line.split(",");
+                if (coachData.length >= 4) {
+                    ArrayList<String> record = new ArrayList<>();
+
+
                 for (String data : coachData) {
                     record.add(data.trim());
                 }
-                coaches.add(record);
+                coaches.add(record);}
             }
 
         } catch (IOException e) {e.printStackTrace();}

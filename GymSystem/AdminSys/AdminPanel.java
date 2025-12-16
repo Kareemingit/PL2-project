@@ -530,11 +530,12 @@ class AdminCoachesPanel extends JPanel {
         model.setRowCount(0);
         ArrayList<ArrayList<String>> coaches = Database.readCoachs();
         for (ArrayList<String> c: coaches) {
+            if (c.size()>=4){
             model.addRow(new Object[]{
                 c.get(0),
                 c.get(1),
                 c.get(2), 
-                c.get(3),});
+                c.get(3),});}
         }
     }
     
