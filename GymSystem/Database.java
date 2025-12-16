@@ -210,4 +210,134 @@ public class Database {
             e.printStackTrace();
         }
     }
-}
+    // Add these to Database.java to resolve image_1472f9.png errors
+
+    public static void updateAccount(int id, String un, String pw, SRole role, String name, String mail, String phone) {
+        ArrayList<ArrayList<String>> accounts = readAccounts();
+        ArrayList<String> lines = new ArrayList<>();
+        for (ArrayList<String> a : accounts) {
+            if (Integer.parseInt(a.get(0)) == id) {
+                lines.add(id + "," + escape(un) + "," + escape(pw) + "," + role.name() + "," + escape(name) + "," + escape(mail) + "," + escape(phone));
+            } else lines.add(String.join(",", a));
+        }
+        try { Files.write(DATA_DIR.resolve("Account.csv"), lines); } catch (IOException e) { e.printStackTrace(); }
+    }
+
+    public static void deleteAccountById(int id) {
+        ArrayList<ArrayList<String>> accounts = readAccounts();
+        ArrayList<String> lines = new ArrayList<>();
+        for (ArrayList<String> a : accounts) {
+            if (Integer.parseInt(a.get(0)) != id) lines.add(String.join(",", a));
+        }
+        try { Files.write(DATA_DIR.resolve("Account.csv"), lines); } catch (IOException e) { e.printStackTrace(); }
+    }
+
+    public static boolean accountExists(int id) {
+        return readAccounts().stream().anyMatch(a -> Integer.parseInt(a.get(0)) == id);
+    }
+
+    // You must also add empty stubs for these to clear the remaining errors:
+    public static void deleteMemberById(int id) {
+        ArrayList<ArrayList<String>> members = readMembers();
+        ArrayList<String> lines = new ArrayList<>();
+        for (ArrayList<String> m : members) {
+            if (Integer.parseInt(m.get(0).trim()) != id) {
+                lines.add(String.join(",", m));
+            }
+        }
+        try {
+            Files.write(DATA_DIR.resolve("members.csv"), lines);
+        } catch (IOException e) { e.printStackTrace(); }
+    }
+
+    public static void deleteCoachById(int id) {
+        ArrayList<ArrayList<String>> coaches = readCoachs();
+        ArrayList<String> lines = new ArrayList<>();
+        for (ArrayList<String> c : coaches) {
+            if (Integer.parseInt(c.get(0).trim()) != id) {
+                lines.add(String.join(",", c));
+            }
+        }
+        try {
+            Files.write(DATA_DIR.resolve("coaches.csv"), lines);
+        } catch (IOException e) { e.printStackTrace(); }
+    }
+    public static void updateMember(int mid, int aid, String name, String date, int coachId) {
+        ArrayList<ArrayList<String>> members = readMembers();
+        ArrayList<String> lines = new ArrayList<>();
+        for (ArrayList<String> m : members) {
+            if (Integer.parseInt(m.get(0).trim()) == mid) {
+                lines.add(mid + "," + aid + "," + escape(name) + "," + escape(date) + "," + coachId);
+            } else {
+                lines.add(String.join(",", m));
+            }
+        }
+        try { Files.write(DATA_DIR.resolve("members.csv"), lines); } catch (IOException e) { e.printStackTrace(); }
+    }
+
+    public static void updateCoach(int cid, int aid, String name, String spec) {
+        ArrayList<ArrayList<String>> coaches = readCoachs();
+        ArrayList<String> lines = new ArrayList<>();
+        for (ArrayList<String> c : coaches) {
+            if (Integer.parseInt(c.get(0).trim()) == cid) {
+                lines.add(cid + "," + aid + "," + escape(name) + "," + escape(spec));
+            } else {
+                lines.add(String.join(",", c));
+            }
+        }
+        try { Files.write(DATA_DIR.resolve("coaches.csv"), lines); } catch (IOException e) { e.printStackTrace(); }
+    }
+    // Add these to your Database class to make the Admin system fully functional
+
+    public static void unassignCoachFromMembers(int coachId) {
+        ArrayList<ArrayList<String>> members = readMembers();
+        ArrayList<String> lines = new ArrayList<>();
+        for (ArrayList<String> m : members) {
+            // If the member is assigned to this coach, set coachId (index 4) to 0
+            if (m.size() > 4 && Integer.parseInt(m.get(4).trim()) == coachId) {
+                m.set(4, "0");
+            }
+            lines.add(String.join(",", m));
+        }
+        try {
+            Files.write(DATA_DIR.resolve("members.csv"), lines);
+        } catch (IOException e) { e.printStackTrace(); }
+    }
+
+    public static ArrayList<ArrayList<String>> readBillings() {
+        Path p = DATA_DIR.resolve("billings.csv");
+        ArrayList<ArrayList<String>> billings = new ArrayList<>();
+        if (!Files.exists(p)) return billings;
+
+        try {
+            List<String> lines = Files.readAllLines(p);
+            for (String line : lines) {
+                if (line.trim().isEmpty()) continue;
+                ArrayList<String> record = new ArrayList<>(Arrays.asList(line.split(",")));
+                billings.add(record);
+            }
+        } catch (IOException e) { e.printStackTrace(); }
+        return billings;
+    }
+
+    public static void writeBilling(int id, int mid, double amt, String date, String desc) {
+        Path p = DATA_DIR.resolve("billings.csv");
+        String row = String.format("%d,%d,%.2f,%s,%s", id, mid, amt, escape(date), escape(desc));
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(p.toString(), true))) {
+            writer.write(row);
+            writer.newLine();
+        } catch (IOException e) { e.printStackTrace(); }
+    }
+
+    public static void deleteBillingById(int id) {
+        ArrayList<ArrayList<String>> billings = readBillings();
+        ArrayList<String> lines = new ArrayList<>();
+        for (ArrayList<String> b : billings) {
+            if (Integer.parseInt(b.get(0).trim()) != id) {
+                lines.add(String.join(",", b));
+            }
+        }
+        try {
+            Files.write(DATA_DIR.resolve("billings.csv"), lines);
+        } catch (IOException e) { e.printStackTrace(); }
+    }}

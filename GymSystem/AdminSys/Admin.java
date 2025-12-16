@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import GymSystem.Account;
 import GymSystem.Database;
 
+
 public class Admin extends Account{
     public Admin() {
         super();
@@ -89,11 +90,11 @@ public class Admin extends Account{
             throw new IllegalStateException("Admin accounts cannot be deleted");
         }
         if (role == SRole.MEMBER) {
-            Database.deleteMemberByAccountId(accountId);
+            Database.deleteMemberById(accountId);
         }
 
         if (role == SRole.COACH) {
-            Database.deleteCoachByAccountId(accountId);
+            Database.deleteCoachById(accountId);
         }
 
         Database.deleteAccountById(accountId);
