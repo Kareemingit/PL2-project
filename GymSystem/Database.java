@@ -181,7 +181,31 @@ public class Database {
             e.printStackTrace();
         }
     }
+    public static boolean checkIfIdExistsInFile(int id, String fileName) {
+        Path p = DATA_DIR.resolve(fileName);
+        if (!Files.exists(p)) return false;
 
+        try {
+            List<String> lines = Files.readAllLines(p);
+            for (String line : lines) {
+                String trimmed = line.trim();
+                if (trimmed.isEmpty()) continue;
+
+                String[] parts = trimmed.split(",");
+                try {
+                    int existingId = Integer.parseInt(parts[0].trim());
+                    if (existingId == id) {
+                        return true;
+                    }
+                } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                    continue;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
     public static void writeMessage(Message message) {
         Path p = Database.DATA_DIR.resolve("messages.csv");
         int id = message.getMssgId();
@@ -343,4 +367,16 @@ public class Database {
         try {
             Files.write(DATA_DIR.resolve("billings.csv"), lines);
         } catch (IOException e) { e.printStackTrace(); }
-    }}
+    }
+    public static int generateRandomUniqueId(String fileName) {
+        int randomId;
+        boolean exists;
+        do {
+            randomId = (int)(Math.random() * 10000) + 1;
+
+            exists = checkIfIdExistsInFile(randomId, fileName);
+        } while (exists);
+
+        return randomId;
+    }
+}

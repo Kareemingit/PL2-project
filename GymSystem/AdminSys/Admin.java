@@ -44,22 +44,11 @@ public class Admin extends Account{
         }
     }
 
-    public void addCoach(int CoachId , int accountId , String name , String specialty){
-        if(CoachId < 0){
-            ArrayList<ArrayList<String>> all = Database.readCoachs();
-            int maxId = -1;
-
-            for (ArrayList<String> row : all) {
-                if (row.isEmpty()) continue;
-
-                try {
-                    int rowId = Integer.parseInt(row.get(0));
-                    if (rowId > maxId) maxId = rowId;
-                } catch (NumberFormatException ignored) {}
-            }
-            CoachId = maxId + 1;
-        }
-        Database.writeCoach(CoachId, accountId, name, specialty);
+    public void addCoach(int ignoredId, int ignoredAccountId, String name, String specialty) {
+        int newAccountId = Database.generateRandomUniqueId("Account.csv");
+        Database.writeAccount(newAccountId, "coach_" + newAccountId, "pass123", SRole.COACH, name, "", "");
+        int newCoachId = Database.generateRandomUniqueId("coaches.csv");
+        Database.writeCoach(newCoachId, newAccountId, name, specialty);
     }
 
     public void addMember(int MemberId , int accountId , String Mname , int CoachId){
