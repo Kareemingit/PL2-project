@@ -64,11 +64,14 @@ public class LoginFrame extends JFrame {
         SRole accountRole = SRole.valueOf(a.get(3));
         switch (accountRole) {
             case ADMIN:
+                String adminName = (a.size() > 4) ? a.get(4) : "Admin";
+                String adminEmail = (a.size() > 5) ? a.get(5) : "";
                 Admin admin = new Admin(Integer.parseInt(a.get(0)) , a.get(1) , a.get(2) , a.get(3) , 
                     a.get(4) , a.get(5));
                 AdminPanel p = new AdminPanel(admin);
                 p.setVisible(true);
                 break;
+
             case COACH:
                 ArrayList<ArrayList<String>> coaches = Database.readCoachs();
                 ArrayList<String> coachData = coaches.stream()
@@ -78,7 +81,9 @@ public class LoginFrame extends JFrame {
                 if (coachData != null) {
                     int coachId = Integer.parseInt(coachData.get(0));
                     String specialty = coachData.get(3);
-
+                    String name  = (a.size() > 4) ? a.get(4) : "No Name";
+                    String email = (a.size() > 5) ? a.get(5) : "No Email";
+                    String phone = (a.size() > 6) ? a.get(6) : "No Phone";
                     GymSystem.CoachSys.Coach coach = new GymSystem.CoachSys.Coach(
                             Integer.parseInt(a.get(0)), a.get(1), a.get(2), a.get(4), a.get(5), a.get(6),
                             coachId, specialty
@@ -90,7 +95,8 @@ public class LoginFrame extends JFrame {
                 } else {
                     JOptionPane.showMessageDialog(this, "Coach data not found.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-                break;            case MEMBER:
+                break;
+            case MEMBER:
                 //MemberPanel mp = new MemberPanel();
             case USER:
                 //UserPanel up = new UserPanel();
