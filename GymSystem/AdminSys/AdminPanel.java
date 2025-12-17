@@ -299,12 +299,31 @@ class AdminMembersPanel extends JPanel {
         int result = JOptionPane.showConfirmDialog(this, panel, "Add Member", JOptionPane.OK_CANCEL_OPTION);
         if (result != JOptionPane.OK_OPTION) return;
 
-        // Call your logic with the new fields
-        parent.me.addMemberExtended(-1, -1, txtName.getText().trim(),
-                txtEmail.getText().trim(),
-                txtPhone.getText().trim(),
-                Integer.parseInt(txtCoachId.getText().trim()));
-        refresh();
+        try {
+            int coachId = Integer.parseInt(txtCoachId.getText().trim());
+
+            if (coachId != 0 && !Database.checkIfIdExistsInFile(coachId, "coaches.csv")) {
+                JOptionPane.showMessageDialog(this, "❌ Error: Coach ID " + coachId + " does not exist!");
+                return;
+            }
+
+            if (txtName.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Name cannot be empty.");
+                return;
+            }
+
+            parent.me.addMemberExtended(-1, -1,
+                    txtName.getText().trim(),
+                    txtEmail.getText().trim(),
+                    txtPhone.getText().trim(),
+                    coachId);
+
+            parent.refreshAllTabs();
+            JOptionPane.showMessageDialog(this, "Member and Account created successfully!");
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Invalid ID format. Please enter numbers only.");
+        }
     }
 
     void editMember() {
@@ -313,67 +332,27 @@ class AdminMembersPanel extends JPanel {
             JOptionPane.showMessageDialog(this, "Select a member to edit");
             return;
         }
-        int memberId = Integer.parseInt(model.getValueAt(row, 0).toString());
+        int mid = Integer.parseInt(model.getValueAt(row, 0).toString());
+        int aid = Integer.parseInt(model.getValueAt(row, 1).toString());
+        String name = model.getValueAt(row, 2).toString();
+        String date = model.getValueAt(row, 3).toString();
+        String currentCoach = model.getValueAt(row, 4).toString();
 
-        ArrayList<ArrayList<String>> members = Database.readMembers();
-        ArrayList<String> record = null;
+        String input = JOptionPane.showInputDialog(this, "Enter new Coach ID:", currentCoach);
+        if (input == null) return;
 
-        for (ArrayList<String> m : members) {
-            if (Integer.parseInt(m.get(0)) == memberId) {
-                record = m;
-                break;
-            }
-        }
-
-        if (record == null) return;
-
-        JTextField txtName = new JTextField(record.get(2));
-        JTextField txtEndDate = new JTextField(record.get(3));
-        JTextField txtCoachId = new JTextField(record.get(4));
-
-        JPanel panel = new JPanel(new GridLayout(3, 2, 6, 6));
-        panel.add(new JLabel("Member Name:"));
-        panel.add(txtName);
-        panel.add(new JLabel("Subscription End (YYYY-MM-DD):"));
-        panel.add(txtEndDate);
-        panel.add(new JLabel("Coach ID (0 = none):"));
-        panel.add(txtCoachId);
-
-        int result = JOptionPane.showConfirmDialog(
-            this,
-            panel,
-            "Edit Member",
-            JOptionPane.OK_CANCEL_OPTION
-        );
-
-        if (result != JOptionPane.OK_OPTION) return;
-
-        String name = txtName.getText().trim();
-        String endDate = txtEndDate.getText().trim();
-        String coachStr = txtCoachId.getText().trim();
-
-        if (name.isEmpty() || endDate.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Name and subscription date are required");
-            return;
-        }
-
-        int coachId;
         try {
-            coachId = coachStr.isEmpty() ? 0 : Integer.parseInt(coachStr);
-            LocalDate.parse(endDate);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Invalid date or coach ID");
-            return;
+            int newCoachId = Integer.parseInt(input.trim());
+            if (newCoachId != 0 && !Database.checkIfIdExistsInFile(newCoachId, "coaches.csv")) {
+                JOptionPane.showMessageDialog(this, "❌ Error: Coach ID " + newCoachId + " does not exist in the system!");
+                return;
+            }
+            Database.updateMember(mid, aid, name, date, newCoachId);
+            parent.refreshAllTabs();
+            JOptionPane.showMessageDialog(this, "Member updated successfully!");
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Invalid input! Please enter a numeric ID.");
         }
-
-        parent.me.editMember(
-            memberId,
-            Integer.parseInt(record.get(1)),
-            name,
-            endDate,
-            coachId
-        );
-        refresh();
     }
 
     void deleteMember() {
@@ -434,7 +413,7 @@ class AdminMembersPanel extends JPanel {
                         m.get(0), // Member ID
                         m.get(1), // Account ID
                         m.get(2), // Name
-                        m.get(3), // Subscription End
+                        m.get(3), // Subsc End
                         m.get(4)  // Coach ID
                 });
             }
@@ -446,51 +425,29 @@ class AdminMembersPanel extends JPanel {
     }
 
     void assignCoach() {
+        String input = JOptionPane.showInputDialog(this, "Enter Coach ID to assign:");
+        if (input == null || input.isEmpty()) return;
 
-        int row = tbl.getSelectedRow();
-        if (row < 0) {
-            JOptionPane.showMessageDialog(this, "Select a member first");
-            return;
+        try {
+            int coachId = Integer.parseInt(input.trim());
+
+            if (!Database.checkIfIdExistsInFile(coachId, "coaches.csv")) {
+                JOptionPane.showMessageDialog(this, "❌ Error: Coach ID " + coachId + " does not exist!");
+                return;
+            }
+
+            int row = tbl.getSelectedRow();
+            int memberId = Integer.parseInt(model.getValueAt(row, 0).toString());
+            int accId = Integer.parseInt(model.getValueAt(row, 1).toString());
+            String name = model.getValueAt(row, 2).toString();
+            String date = model.getValueAt(row, 3).toString();
+
+            Database.updateMember(memberId, accId, name, date, coachId);
+            parent.refreshAllTabs();
+            JOptionPane.showMessageDialog(this, "Coach assigned successfully!");
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Please enter a valid numeric ID.");
         }
-
-        int memberId = Integer.parseInt(model.getValueAt(row, 0).toString());
-        int accountId = Integer.parseInt(model.getValueAt(row, 1).toString());
-        String name = model.getValueAt(row, 2).toString();
-        String endDate = model.getValueAt(row, 3).toString();
-
-        ArrayList<ArrayList<String>> coaches = Database.readCoachs();
-        if (coaches.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "No coaches available");
-            return;
-        }
-
-        String[] coachOptions = coaches.stream()
-                .map(c -> c.get(0) + " - " + c.get(2) + " (" + c.get(3) + ")")
-                .toArray(String[]::new);
-
-        String selected = (String) JOptionPane.showInputDialog(
-            this,
-            "Select a coach:",
-            "Assign Coach",
-            JOptionPane.PLAIN_MESSAGE,
-            null,
-            coachOptions,
-            coachOptions[0]
-        );
-
-        if (selected == null) return;
-
-        int coachId = Integer.parseInt(selected.split(" - ")[0]);
-
-        parent.me.assignCoachToMember(
-            memberId,
-            accountId,
-            name,
-            endDate,
-            coachId
-        );
-
-        refresh();
     }
 
 }

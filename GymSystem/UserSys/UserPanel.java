@@ -1,6 +1,6 @@
 package GymSystem.UserSys;
 
-//import GymSystem.GUI.LoginFrame; // تعديل المسار ليقرأ من فولدر GUI
+//import GymSystem.GUI.LoginFrame;
 import GymSystem.LoginFrame;
 import javax.swing.*;
 import java.awt.*;
@@ -31,29 +31,35 @@ public class UserPanel extends JFrame {
         btnEdit.addActionListener(e -> updateInfo());
         add(btnEdit, BorderLayout.SOUTH);
 
-        setVisible(true); // مهمة عشان الشاشة تظهر
+        setVisible(true);
     }
 
     private void updateInfo() {
-        String newUsername = JOptionPane.showInputDialog(this, "Enter new username:", currentUser.getUsername());
-        String newPassword = JOptionPane.showInputDialog(this, "Enter new password:", currentUser.getPassword());
-        String newName     = JOptionPane.showInputDialog(this, "Enter new name:", currentUser.getName());
-        String newEmail    = JOptionPane.showInputDialog(this, "Enter new email:", currentUser.getEmail());
-        String newPhone    = JOptionPane.showInputDialog(this, "Enter new phone:", currentUser.getPhone());
+        JTextField unField = new JTextField(currentUser.getUsername());
+        JTextField pwField = new JTextField(currentUser.getPassword());
+        JTextField nameField = new JTextField(currentUser.getName());
+        JTextField emailField = new JTextField(currentUser.getEmail());
+        JTextField phoneField = new JTextField(currentUser.getPhone());
 
-        if(newUsername != null && newPassword != null && newName != null && newEmail != null && newPhone != null) {
+        Object[] message = {
+                "Username:", unField,
+                "Password:", pwField,
+                "Full Name:", nameField,
+                "Email:", emailField,
+                "Phone:", phoneField
+        };
 
-            if (newUsername.trim().isEmpty() || newPassword.trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Username and Password cannot be empty.");
-                return;
-            }
+        int option = JOptionPane.showConfirmDialog(this, message, "Update Profile", JOptionPane.OK_CANCEL_OPTION);
 
-            currentUser.updateInformation(newUsername, newPassword, newName, newEmail, newPhone);
-
-            JOptionPane.showMessageDialog(this, "Information updated and saved successfully!");
-            setTitle("User - " + newUsername);
-
-            this.repaint();
+        if (option == JOptionPane.OK_OPTION) {
+            currentUser.updateInformation(
+                    unField.getText().trim(),
+                    pwField.getText().trim(),
+                    nameField.getText().trim(),
+                    emailField.getText().trim(),
+                    phoneField.getText().trim()
+            );
+            JOptionPane.showMessageDialog(this, "Profile Updated!");
         }
     }
     private void logout() {

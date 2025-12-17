@@ -3,12 +3,6 @@ package GymSystem.UserSys;
 import GymSystem.Account;
 
 public class User extends Account{
-    // private int id;
-    // private String username;
-    // private String password;
-    // private String name;
-    // private String email;
-    // private String phone;
 
     public User(int id, String username, String password,
                 String name, String email, String phone) {

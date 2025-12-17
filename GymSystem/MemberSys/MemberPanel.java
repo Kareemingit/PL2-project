@@ -22,12 +22,12 @@ public class MemberPanel extends JFrame {
 
             if (endDate.isBefore(today)) {
                 JOptionPane.showMessageDialog(this,
-                        "⚠️ NOTIFICATION: Your subscription has expired on " + dateStr + "!",
-                        "Subscription Expired", JOptionPane.WARNING_MESSAGE); //
+                        "NOTIFICATION: Your subscription has expired on " + dateStr + "!",
+                        "Subscription Expired", JOptionPane.WARNING_MESSAGE);
             } else if (endDate.isBefore(today.plusDays(3))) {
                 JOptionPane.showMessageDialog(this,
-                        "🔔 NOTIFICATION: Your subscription expires in less than 3 days!",
-                        "Expiry Warning", JOptionPane.INFORMATION_MESSAGE); //
+                        "NOTIFICATION: Your subscription expires in less than 3 days!",
+                        "Expiry Warning", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (Exception e) {
             System.err.println("Invalid date format in database: " + dateStr);
@@ -36,7 +36,7 @@ public class MemberPanel extends JFrame {
     public MemberPanel(Account member) {
         this.member = member;
         setTitle("Member Dashboard - " + member.getName());
-        setSize(500, 450);
+        setSize(550, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
@@ -45,9 +45,10 @@ public class MemberPanel extends JFrame {
         lblWelcome.setFont(new Font("Arial", Font.BOLD, 18));
         add(lblWelcome, BorderLayout.NORTH);
 
-        JPanel center = new JPanel(new BorderLayout());
-        JPanel infoPanel = new JPanel(new GridLayout(3, 1));
+        JPanel center = new JPanel();
+        center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
 
+        JPanel infoPanel = new JPanel(new GridLayout(2, 1));
         String subEnd = "N/A";
         String coachName = "None Assigned";
         int coachId = 0;
@@ -55,7 +56,7 @@ public class MemberPanel extends JFrame {
         ArrayList<ArrayList<String>> membersData = Database.readMembers();
         for (ArrayList<String> m : membersData) {
             if (m.size() > 4 && Integer.parseInt(m.get(1).trim()) == member.getId()) {
-                subEnd = m.get(3);
+                subEnd = m.get(3).trim();
                 coachId = Integer.parseInt(m.get(4).trim());
                 break;
             }
@@ -65,36 +66,31 @@ public class MemberPanel extends JFrame {
             ArrayList<ArrayList<String>> coaches = Database.readCoachs();
             for (ArrayList<String> c : coaches) {
                 if (Integer.parseInt(c.get(0).trim()) == coachId) {
-                    coachName = c.get(2);
+                    coachName = c.get(2).trim(); //
                     break;
                 }
             }
         }
 
-        infoPanel.add(new JLabel("Subscription Ends: " + subEnd, SwingConstants.CENTER));
-        infoPanel.add(new JLabel("Your Coach: " + coachName, SwingConstants.CENTER));
+        infoPanel.add(new JLabel("Subscription Ends: " + subEnd, SwingConstants.CENTER)); //
+        infoPanel.add(new JLabel("Your Coach: " + coachName, SwingConstants.CENTER)); //
+        center.add(infoPanel);
 
         JTextArea txtPlan = new JTextArea(8, 20);
         txtPlan.setEditable(false);
         txtPlan.setText("--- Your Training Plan ---\n");
+        loadPlan(txtPlan);
+        center.add(new JLabel("Training Schedule:"));
+        center.add(new JScrollPane(txtPlan));
 
-        try {
-            Path path = Paths.get("data", "schedules.csv");
-            if (Files.exists(path)) {
-                List<String> lines = Files.readAllLines(path);
-                for (String line : lines) {
-                    String[] p = line.split(",");
-                    if (p.length >= 6 && Integer.parseInt(p[2].trim()) == member.getId()) {
-                        txtPlan.append("Details: " + p[5].replace(";", ",") + "\n");
-                        txtPlan.append("Timeline: " + p[3] + " to " + p[4] + "\n\n");
-                    }
-                }
-            }
-        } catch (Exception ex) { ex.printStackTrace(); }
+        JTextArea txtMessages = new JTextArea(8, 20);
+        txtMessages.setEditable(false);
+        txtMessages.setText("--- Messages from Coach ---\n");
+        loadMessages(txtMessages, coachId);
+        center.add(new JLabel("Coach Notifications:"));
+        center.add(new JScrollPane(txtMessages));
 
-        center.add(infoPanel, BorderLayout.NORTH);
-        center.add(new JScrollPane(txtPlan), BorderLayout.CENTER); // Req 3b
-        add(center, BorderLayout.CENTER);
+        add(new JScrollPane(center), BorderLayout.CENTER);
 
         JButton btnLogout = new JButton("Logout");
         btnLogout.addActionListener(e -> {
@@ -106,5 +102,41 @@ public class MemberPanel extends JFrame {
         if (!subEnd.equals("N/A")) {
             checkSubscriptionStatus(subEnd);
         }
+    }
+
+    private void loadMessages(JTextArea area, int myCoachId) {
+        try {
+            Path path = Paths.get("data", "messages.csv");
+            if (Files.exists(path)) {
+                List<String> lines = Files.readAllLines(path);
+                for (String line : lines) {
+                    String[] p = line.split(",");
+                    if (p.length >= 5) {
+                        int senderId = Integer.parseInt(p[1].trim());
+                        int receiverId = Integer.parseInt(p[2].trim());
+
+                        if (senderId == myCoachId || receiverId == member.getId() || receiverId == 0) {
+                            area.append("[" + p[3] + "]: " + p[4].replace(";", ",") + "\n");
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) { ex.printStackTrace(); }
+    }
+
+    private void loadPlan(JTextArea area) {
+        try {
+            Path path = Paths.get("data", "schedules.csv");
+            if (Files.exists(path)) {
+                List<String> lines = Files.readAllLines(path);
+                for (String line : lines) {
+                    String[] p = line.split(",");
+                    if (p.length >= 6 && Integer.parseInt(p[2].trim()) == member.getId()) {
+                        area.append("Details: " + p[5].replace(";", ",") + "\n");
+                        area.append("Timeline: " + p[3] + " to " + p[4] + "\n\n");
+                    }
+                }
+            }
+        } catch (Exception ex) { ex.printStackTrace(); }
     }
 }
