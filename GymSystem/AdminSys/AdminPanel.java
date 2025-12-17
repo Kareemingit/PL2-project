@@ -10,26 +10,37 @@ import java.io.*;
 import java.nio.file.*;
 
 class AdminAccountsPanel extends JPanel {
+
     AdminPanel parent;
     JTable tbl;
     DefaultTableModel model;
     public AdminAccountsPanel(AdminPanel p) {
         this.parent = p;
         setLayout(new BorderLayout());
-        model = new DefaultTableModel(new Object[]{"ID","Username","Role","Name","Email","Phone"},0) {
-            public boolean isCellEditable(int row,int col){return false;}
+        model = new DefaultTableModel(new Object[]{"ID","Username","Role","Name","Email","Phone"}, 0) {
+            public boolean isCellEditable(int row, int col) { return false; }
         };
         tbl = new JTable(model);
         refresh();
 
-        JPanel top = new JPanel();
-        JButton btnAdd = new JButton("Add Account"); btnAdd.addActionListener(e->addAccount());
-        JButton btnEdit = new JButton("Edit Account"); btnEdit.addActionListener(e->editAccount());
-        JButton btnDelete = new JButton("Delete Account"); btnDelete.addActionListener(e->deleteAccount());
-        JButton btnSearch = new JButton("Search"); btnSearch.addActionListener(e->searchAccount());
-        top.add(btnAdd); top.add(btnEdit); top.add(btnDelete); top.add(btnSearch);
+        JPanel topPanel = new JPanel();
 
-        add(top, BorderLayout.NORTH);
+        JButton btnAdd = new JButton("Add Account"); btnAdd.addActionListener(e -> addAccount());
+        JButton btnEdit = new JButton("Edit Account"); btnEdit.addActionListener(e -> editAccount());
+        JButton btnDelete = new JButton("Delete Account"); btnDelete.addActionListener(e -> deleteAccount());
+        JButton btnSearch = new JButton("Search"); btnSearch.addActionListener(e -> searchAccount());
+
+        // Create and link the Refresh button
+        JButton btnRefresh = new JButton("Refresh");
+        btnRefresh.addActionListener(e -> refresh());
+
+        topPanel.add(btnAdd);
+        topPanel.add(btnEdit);
+        topPanel.add(btnDelete);
+        topPanel.add(btnSearch);
+        topPanel.add(btnRefresh);
+
+        add(topPanel, BorderLayout.NORTH);
         add(new JScrollPane(tbl), BorderLayout.CENTER);
     }
 
@@ -39,6 +50,7 @@ class AdminAccountsPanel extends JPanel {
         ArrayList<ArrayList<String>> accounts = Database.readAccounts();
 
         for (ArrayList<String> u : accounts) {
+            if (u.size() >= 7) {
             model.addRow(new Object[]{
                 u.get(0), // id
                 u.get(4), // name
@@ -46,7 +58,7 @@ class AdminAccountsPanel extends JPanel {
                 u.get(1), // username
                 u.get(5), // email
                 u.get(6)  // phone
-            });
+            });}
         }
     }
     
@@ -101,7 +113,7 @@ class AdminAccountsPanel extends JPanel {
             refresh();
         }
     }
-    
+
     void deleteAccount() {
         int row = tbl.getSelectedRow();
         if (row < 0) {
@@ -114,7 +126,7 @@ class AdminAccountsPanel extends JPanel {
 
         int confirm = JOptionPane.showConfirmDialog(
                 this,
-                "This action will permanently delete the account.\nContinue?",
+                "This action will permanently delete the account and all linked data.\nContinue?",
                 "Confirm Deletion",
                 JOptionPane.YES_NO_OPTION
         );
@@ -123,11 +135,13 @@ class AdminAccountsPanel extends JPanel {
 
         try {
             parent.me.deleteAccountCascade(id, role);
-            refresh();
-        } catch (IllegalStateException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage());
-        }
 
+            parent.refreshAllTabs();
+
+            JOptionPane.showMessageDialog(this, "Account and all linked records deleted successfully.");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+        }
     }
     
     void searchAccount() {
@@ -136,7 +150,7 @@ class AdminAccountsPanel extends JPanel {
             "Search by ID, username, name, role, email, or phone:"
         );
 
-        if (keyword == null) return; // user canceled
+        if (keyword == null) return;
 
         keyword = keyword.trim().toLowerCase();
 
@@ -271,48 +285,25 @@ class AdminMembersPanel extends JPanel {
     }
 
     void addMember() {
-        JTextField txtAccountId = new JTextField();
         JTextField txtName = new JTextField();
+        JTextField txtEmail = new JTextField();
+        JTextField txtPhone = new JTextField();
         JTextField txtCoachId = new JTextField("0");
-        JPanel panel = new JPanel(new GridLayout(3, 2, 6, 6));
-        panel.add(new JLabel("Account ID:"));
-        panel.add(txtAccountId);
-        panel.add(new JLabel("Member Name:"));
-        panel.add(txtName);
-        panel.add(new JLabel("Coach ID (0 = none):"));
-        panel.add(txtCoachId);
 
-        int result = JOptionPane.showConfirmDialog(
-            this,
-            panel,
-            "Add Member",
-            JOptionPane.OK_CANCEL_OPTION
-        );
+        JPanel panel = new JPanel(new GridLayout(4, 2, 10, 10));
+        panel.add(new JLabel("Member Name:")); panel.add(txtName);
+        panel.add(new JLabel("Email:")); panel.add(txtEmail);
+        panel.add(new JLabel("Phone:")); panel.add(txtPhone);
+        panel.add(new JLabel("Coach ID (0=none):")); panel.add(txtCoachId);
 
+        int result = JOptionPane.showConfirmDialog(this, panel, "Add Member", JOptionPane.OK_CANCEL_OPTION);
         if (result != JOptionPane.OK_OPTION) return;
 
-        String accIdStr = txtAccountId.getText().trim();
-        String name = txtName.getText().trim();
-        String coachIdStr = txtCoachId.getText().trim();
-
-        if (accIdStr.isEmpty() || name.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Account ID and Name are required");
-            return;
-        }
-        int accountId, coachId;
-        try {
-            accountId = Integer.parseInt(accIdStr);
-            coachId = coachIdStr.isEmpty() ? 0 : Integer.parseInt(coachIdStr);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Invalid numeric values");
-            return;
-        }
-        if (accountId > 0 && Database.readAccounts().stream()
-                .noneMatch(a -> Integer.parseInt(a.get(0)) == accountId)) {
-            JOptionPane.showMessageDialog(this, "Account ID does not exist");
-            return;
-        }
-        parent.me.addMember(-1, accountId, name, coachId);
+        // Call your logic with the new fields
+        parent.me.addMemberExtended(-1, -1, txtName.getText().trim(),
+                txtEmail.getText().trim(),
+                txtPhone.getText().trim(),
+                Integer.parseInt(txtCoachId.getText().trim()));
         refresh();
     }
 
@@ -509,21 +500,31 @@ class AdminMembersPanel extends JPanel {
 class AdminCoachesPanel extends JPanel {
     AdminPanel parent;
     JTable tbl; DefaultTableModel model;
+
     public AdminCoachesPanel(AdminPanel p) {
         this.parent = p;
         setLayout(new BorderLayout());
-        model = new DefaultTableModel(new Object[]{"ID","Account ID","Name","Specialty"},0){ public boolean isCellEditable(int r,int c){return false;} };
+        model = new DefaultTableModel(new Object[]{"ID","Account ID","Name","Specialty"},0){
+            public boolean isCellEditable(int r,int c){return false;}
+        };
         tbl = new JTable(model);
         refresh();
+        JPanel btnP = new JPanel();
 
-        JPanel top = new JPanel();
         JButton btnAdd = new JButton("Add Coach"); btnAdd.addActionListener(e->addCoach());
         JButton btnEdit = new JButton("Edit Coach"); btnEdit.addActionListener(e->editCoach());
         JButton btnDelete = new JButton("Delete Coach"); btnDelete.addActionListener(e->deleteCoach());
         JButton btnSearch = new JButton("Search"); btnSearch.addActionListener(e->searchCoach());
-        top.add(btnAdd); top.add(btnEdit); top.add(btnDelete); top.add(btnSearch);
 
-        add(top, BorderLayout.NORTH);
+        JButton btnRefresh = new JButton("Refresh");
+        btnRefresh.addActionListener(e -> refresh());
+
+        btnP.add(btnAdd);
+        btnP.add(btnEdit);
+        btnP.add(btnDelete);
+        btnP.add(btnSearch);
+        btnP.add(btnRefresh);
+        add(btnP, BorderLayout.NORTH);
         add(new JScrollPane(tbl), BorderLayout.CENTER);
     }
     void refresh() {
@@ -538,14 +539,35 @@ class AdminCoachesPanel extends JPanel {
                 c.get(3),});}
         }
     }
-    
+
     void addCoach() {
-        String name = JOptionPane.showInputDialog(this, "Full name:");
-        if (name==null) name="";
-        String specialty = JOptionPane.showInputDialog(this, "Specialty:");
-        if (specialty==null) specialty="";
-        parent.me.addCoach(-1, -1, name, specialty);        
-        refresh();
+        JTextField txtName = new JTextField();
+        JTextField txtSpecialty = new JTextField();
+        JTextField txtEmail = new JTextField();
+        JTextField txtPhone = new JTextField();
+
+        JPanel panel = new JPanel(new GridLayout(4, 2, 10, 10));
+        panel.add(new JLabel("Full Name:")); panel.add(txtName);
+        panel.add(new JLabel("Specialty:")); panel.add(txtSpecialty);
+        panel.add(new JLabel("Email:")); panel.add(txtEmail);
+        panel.add(new JLabel("Phone:")); panel.add(txtPhone);
+
+        int result = JOptionPane.showConfirmDialog(this, panel, "Add New Coach", JOptionPane.OK_CANCEL_OPTION);
+
+        if (result == JOptionPane.OK_OPTION) {
+            String name = txtName.getText().trim();
+            String specialty = txtSpecialty.getText().trim();
+            String email = txtEmail.getText().trim();
+            String phone = txtPhone.getText().trim();
+
+            if (name.isEmpty() || specialty.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Name and Specialty are required!");
+                return;
+            }
+
+            parent.me.addCoachExtended(-1, -1, name, specialty, email, phone);
+            refresh();
+        }
     }
 
     void editCoach() {
@@ -604,28 +626,22 @@ class AdminCoachesPanel extends JPanel {
 
         refresh();
     }
-    
+
     void deleteCoach() {
         int row = tbl.getSelectedRow();
         if (row < 0) {
             JOptionPane.showMessageDialog(this, "Select a coach to delete");
             return;
         }
-
         int coachId = Integer.parseInt(model.getValueAt(row, 0).toString());
+        int accId = Integer.parseInt(model.getValueAt(row, 1).toString());
+        int confirm = JOptionPane.showConfirmDialog(this, "Delete Coach " + coachId + "?", "Confirm", JOptionPane.YES_NO_OPTION);
 
-        int confirm = JOptionPane.showConfirmDialog(
-                this,
-                "Deleting this coach will unassign all members.\n\nContinue?",
-                "Confirm Delete",
-                JOptionPane.YES_NO_OPTION
-        );
-
-        if (confirm != JOptionPane.YES_OPTION) return;
-
-        parent.me.deleteCoachCascade(coachId);
-        refresh();
-
+        if (confirm == JOptionPane.YES_OPTION) {
+            parent.me.deleteCoachCascade(coachId);
+            parent.refreshAllTabs();
+            JOptionPane.showMessageDialog(this, "Coach deleted and table refreshed!");
+        }
     }
     
     void searchCoach() {
@@ -871,18 +887,26 @@ class AdminReportsPanel extends JPanel {
 public class AdminPanel extends JFrame {
     JTabbedPane tabs;
     Admin me;
+    AdminAccountsPanel accountsTab;
+    AdminMembersPanel membersTab;
+    AdminCoachesPanel coachesTab;
+    AdminBillingPanel billingTab;
     public AdminPanel(Admin me) {
         this.me = me;
         setTitle("Admin Dashboard");
         setSize(900,600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+        accountsTab = new AdminAccountsPanel(this);
+        membersTab = new AdminMembersPanel(this);
+        coachesTab = new AdminCoachesPanel(this);
+        billingTab = new AdminBillingPanel(this);
 
         tabs = new JTabbedPane();
-        tabs.add("All Accounts", new AdminAccountsPanel(this));
-        tabs.add("Members", new AdminMembersPanel(this));
-        tabs.add("Coaches", new AdminCoachesPanel(this));
-        tabs.add("Billing", new AdminBillingPanel(this));
+        tabs.add("All Accounts", accountsTab);
+        tabs.add("Members", membersTab);
+        tabs.add("Coaches", coachesTab);
+        tabs.add("Billing", billingTab);
         tabs.add("Reports", new AdminReportsPanel(this));
         add(tabs, BorderLayout.CENTER);
 
@@ -900,5 +924,11 @@ public class AdminPanel extends JFrame {
             LoginFrame lf = new LoginFrame();
             lf.setVisible(true);
         });
+    }
+    public void refreshAllTabs() {
+        if (accountsTab != null) accountsTab.refresh();
+        if (membersTab != null) membersTab.refresh();
+        if (coachesTab != null) coachesTab.refresh();
+        if (billingTab != null) billingTab.refresh();
     }
 }

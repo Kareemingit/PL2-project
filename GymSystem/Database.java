@@ -33,12 +33,12 @@ public class Database {
 
                 ArrayList<String> record = new ArrayList<>();
                 String[] accountData = line.split(",");
-
+                if (accountData.length >= 7) {
                 for (String data : accountData) {
                     record.add(data.trim());
                 }
 
-                accounts.add(record);
+                accounts.add(record);}
             }
 
         } catch (IOException e) {
@@ -287,8 +287,11 @@ public class Database {
         }
         try {
             Files.write(DATA_DIR.resolve("coaches.csv"), lines);
-        } catch (IOException e) { e.printStackTrace(); }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
     public static void updateMember(int mid, int aid, String name, String date, int coachId) {
         ArrayList<ArrayList<String>> members = readMembers();
         ArrayList<String> lines = new ArrayList<>();
@@ -299,7 +302,8 @@ public class Database {
                 lines.add(String.join(",", m));
             }
         }
-        try { Files.write(DATA_DIR.resolve("members.csv"), lines); } catch (IOException e) { e.printStackTrace(); }
+        try { Files.write(DATA_DIR.resolve("members.csv"), lines); }
+        catch (IOException e) { e.printStackTrace(); }
     }
 
     public static void updateCoach(int cid, int aid, String name, String spec) {

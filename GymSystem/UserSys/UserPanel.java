@@ -21,7 +21,7 @@ public class UserPanel extends JFrame {
 
         JPanel top = new JPanel(new BorderLayout());
         top.add(new JLabel("  Logged in as: " + currentUser.getUsername()), BorderLayout.WEST);
-        
+
         JButton btnLogout = new JButton("Logout");
         btnLogout.addActionListener(e -> logout());
         top.add(btnLogout, BorderLayout.EAST);
@@ -44,7 +44,7 @@ public class UserPanel extends JFrame {
         if(newUsername != null && newPassword != null && newName != null && newEmail != null && newPhone != null) {
             currentUser.updateInformation(newUsername, newPassword, newName, newEmail, newPhone);
             JOptionPane.showMessageDialog(this, "Information updated successfully!");
-            
+
             setTitle("User - " + newUsername);
             revalidate();
             repaint();
@@ -53,10 +53,10 @@ public class UserPanel extends JFrame {
 
     private void logout() {
         this.dispose();
-        
+
         SwingUtilities.invokeLater(() -> {
             try {
-                new LoginFrame().setVisible(true); 
+                new LoginFrame().setVisible(true);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(null, "LoginFrame not found! \nError: " + ex.getMessage());
             }

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import GymSystem.Account;
 import GymSystem.Database;
 
+import javax.swing.*;
+
 
 public class Admin extends Account{
     public Admin() {
@@ -51,23 +53,15 @@ public class Admin extends Account{
         Database.writeCoach(newCoachId, newAccountId, name, specialty);
     }
 
-    public void addMember(int MemberId , int accountId , String Mname , int CoachId){
-        DateTimeFormatter DATE_FMT = DateTimeFormatter.ISO_LOCAL_DATE;
-        if(MemberId < 0){
-            ArrayList<ArrayList<String>> all = Database.readMembers();
-            int maxId = -1;
+    public void addMember(int ignoredMid, int ignoredAid, String name, int coachId) {
+        int newAccountId = Database.generateRandomUniqueId("Account.csv");
 
-            for (ArrayList<String> row : all) {
-                if (row.isEmpty()) continue;
+        Database.writeAccount(newAccountId, "mem_" + newAccountId, "pass123", SRole.MEMBER, name, "", "");
 
-                try {
-                    int rowId = Integer.parseInt(row.get(0));
-                    if (rowId > maxId) maxId = rowId;
-                } catch (NumberFormatException ignored) {}
-            }
-            MemberId = maxId + 1;
-        }
-        Database.writeMember(MemberId, accountId, Mname , LocalDate.now().plusDays(10).format(DATE_FMT) , CoachId);
+        int newMemberId = Database.generateRandomUniqueId("members.csv");
+
+        String endDate = LocalDate.now().plusMonths(1).toString();
+        Database.writeMember(newMemberId, newAccountId, name, endDate, coachId);
     }
     
     public void editAccount(int id, String username, String password, SRole role,String name, String email, String phone) {
@@ -76,16 +70,29 @@ public class Admin extends Account{
 
     public void deleteAccountCascade(int accountId, SRole role) {
         if (role == SRole.ADMIN) {
-            throw new IllegalStateException("Admin accounts cannot be deleted");
+            JOptionPane.showMessageDialog(null, "Admin accounts cannot be deleted");
+            return;
         }
+
         if (role == SRole.MEMBER) {
-            Database.deleteMemberById(accountId);
+            ArrayList<ArrayList<String>> members = Database.readMembers();
+            for (ArrayList<String> m : members) {
+                if (m.size() > 1 && Integer.parseInt(m.get(1).trim()) == accountId) {
+                    Database.deleteMemberById(Integer.parseInt(m.get(0).trim())); // Delete by Member ID
+                    break;
+                }
+            }
         }
 
         if (role == SRole.COACH) {
-            Database.deleteCoachById(accountId);
+            ArrayList<ArrayList<String>> coaches = Database.readCoachs();
+            for (ArrayList<String> c : coaches) {
+                if (c.size() > 1 && Integer.parseInt(c.get(1).trim()) == accountId) {
+                    Database.deleteCoachById(Integer.parseInt(c.get(0).trim())); // Delete by Coach ID
+                    break;
+                }
+            }
         }
-
         Database.deleteAccountById(accountId);
     }
 
@@ -134,8 +141,29 @@ public class Admin extends Account{
                 note
         );
     }
+    public void addCoachExtended(int id, int accId, String name, String spec, String email, String phone) {
+        int newAccountId = Database.generateRandomUniqueId("Account.csv");
+        int newCoachId = Database.generateRandomUniqueId("coaches.csv");
+
+        Database.writeAccount(newAccountId, "coach_" + newAccountId, "pass123", SRole.COACH, name, email, phone);
+        Database.writeCoach(newCoachId, newAccountId, name, spec);
+    }
+
+    public void addMemberExtended(int mid, int aid, String name, String email, String phone, int coachId) {
+        int newAccountId = Database.generateRandomUniqueId("Account.csv");
+        Database.writeAccount(newAccountId, "mem_" + newAccountId, "pass123", SRole.MEMBER, name, email, phone);
+
+        int newMemberId = Database.generateRandomUniqueId("members.csv");
+        String endDate = LocalDate.now().plusMonths(1).toString();
+        Database.writeMember(newMemberId, newAccountId, name, endDate, coachId);
+    }
 
     public void deleteBilling(int billingId) {
         Database.deleteBillingById(billingId);
+    }
+
+    public void deleteCoachAndAccount(int coachId, int accId) {
+        Database.deleteCoachById(coachId);
+        Database.deleteAccountById(accId);
     }
 }

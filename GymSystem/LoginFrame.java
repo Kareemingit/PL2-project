@@ -5,7 +5,9 @@ import java.util.*;
 import GymSystem.Account.SRole;
 import GymSystem.AdminSys.Admin;
 import GymSystem.AdminSys.AdminPanel;
-import GymSystem.CoachSys.Coach;
+import GymSystem.MemberSys.MemberPanel;
+import GymSystem.UserSys.User;
+import GymSystem.UserSys.UserPanel;
 import GymSystem.CoachSys.CoachPanel;
 
 public class LoginFrame extends JFrame {
@@ -97,10 +99,22 @@ public class LoginFrame extends JFrame {
                 }
                 break;
             case MEMBER:
-                //MemberPanel mp = new MemberPanel();
-            case USER:
-                //UserPanel up = new UserPanel();
-            default:
+                Account mAcc = new Account(
+                        Integer.parseInt(a.get(0)), a.get(1), a.get(2), SRole.MEMBER,
+                        (a.size() > 4 ? a.get(4) : "Member"),
+                        (a.size() > 5 ? a.get(5) : ""),
+                        (a.size() > 6 ? a.get(6) : "")
+                );
+                new MemberPanel(mAcc).setVisible(true);
+                this.dispose();
+                break;            case USER:
+                Account uAcc = new Account(
+                        Integer.parseInt(a.get(0)), a.get(1), a.get(2), SRole.USER,
+                        (a.size() > 4 ? a.get(4) : "User"), "", ""
+                );
+                new UserPanel((User) uAcc).setVisible(true);
+                this.dispose();
+                break;            default:
                 break;
         }
     }
