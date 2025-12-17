@@ -359,11 +359,16 @@ public class Database {
 
     public static void writeBilling(int id, int mid, double amt, String date, String desc) {
         Path p = DATA_DIR.resolve("billings.csv");
-        String row = String.format(java.util.Locale.US,"%d,%d,%.2f,%s,%s", id, mid, amt, escape(date), escape(desc));
+        String row = String.format(java.util.Locale.US, "%d,%d,%.2f,%s,%s",
+                id, mid, amt, escape(date), escape(desc));
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(p.toString(), true))) {
             writer.write(row);
             writer.newLine();
-        } catch (IOException e) { e.printStackTrace(); }
+            writer.flush();
+        } catch (IOException e) {
+            System.err.println("Error writing to billings.csv: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public static void deleteBillingById(int id) {

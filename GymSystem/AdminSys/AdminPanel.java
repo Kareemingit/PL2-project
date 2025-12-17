@@ -685,22 +685,17 @@ class AdminBillingPanel extends JPanel {
     void addBilling() {
         JTextField txtMemberId = new JTextField();
         JTextField txtAmount = new JTextField();
-        JTextField txtDate = new JTextField();
+        JTextField txtDate = new JTextField(java.time.LocalDate.now().toString());
         JTextField txtNote = new JTextField();
+
         Object[] form = {
-                "Member ID:", txtMemberId,
+                "Member Account ID:", txtMemberId,
                 "Amount:", txtAmount,
-                "Date:", txtDate,
+                "Date (YYYY-MM-DD):", txtDate,
                 "Note:", txtNote
         };
 
-        int result = JOptionPane.showConfirmDialog(
-            this,
-            form,
-            "Add Billing",
-            JOptionPane.OK_CANCEL_OPTION
-        );
-
+        int result = JOptionPane.showConfirmDialog(this, form, "Add Billing", JOptionPane.OK_CANCEL_OPTION);
         if (result != JOptionPane.OK_OPTION) return;
 
         try {
@@ -708,13 +703,17 @@ class AdminBillingPanel extends JPanel {
             double amount = Double.parseDouble(txtAmount.getText().trim());
             String date = txtDate.getText().trim();
             String note = txtNote.getText().trim();
-            if(note.isEmpty())
-                note = "-";
-            parent.me.addBilling(-1 ,memberId, amount, date, note);
+            if (!Database.accountExists(memberId)) {
+                JOptionPane.showMessageDialog(this, "❌ Error: Account ID " + memberId + " not found!");
+                return;
+            }
+            if(note.isEmpty()) note = "-";
+            parent.me.addBilling(-1, memberId, amount, date, note);
             refresh();
+            JOptionPane.showMessageDialog(this, "Billing added successfully and saved to CSV!");
 
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Invalid numeric input");
+            JOptionPane.showMessageDialog(this, "Invalid numeric input. Please enter numbers for ID and Amount.");
         }
     }
     
