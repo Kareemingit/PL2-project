@@ -116,16 +116,14 @@ public class Database {
             List<String> lines = Files.readAllLines(p);
             for (String line : lines) {
                 if (line.trim().isEmpty()) continue;
-                ArrayList<String> record = new ArrayList<>();
                 String[] memberData = line.split(",");
+                ArrayList<String> record = new ArrayList<>();
                 for (String data : memberData) {
-                    record.add(data);
+                    record.add(data.trim());
                 }
                 members.add(record);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) { e.printStackTrace(); }
         return members;
     }
 
