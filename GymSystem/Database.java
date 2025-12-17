@@ -359,7 +359,7 @@ public class Database {
 
     public static void writeBilling(int id, int mid, double amt, String date, String desc) {
         Path p = DATA_DIR.resolve("billings.csv");
-        String row = String.format("%d,%d,%.2f,%s,%s", id, mid, amt, escape(date), escape(desc));
+        String row = String.format(java.util.Locale.US,"%d,%d,%.2f,%s,%s", id, mid, amt, escape(date), escape(desc));
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(p.toString(), true))) {
             writer.write(row);
             writer.newLine();
