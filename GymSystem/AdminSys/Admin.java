@@ -143,16 +143,14 @@ public class Admin extends Account{
     }
     public void addCoachExtended(int id, int accId, String name, String spec, String email, String phone) {
         int newAccountId = Database.generateRandomUniqueId("Account.csv");
-        int newCoachId = Database.generateRandomUniqueId("coaches.csv");
-
         Database.writeAccount(newAccountId, "coach_" + newAccountId, "pass123", SRole.COACH, name, email, phone);
+        int newCoachId = Database.generateRandomUniqueId("coaches.csv");
         Database.writeCoach(newCoachId, newAccountId, name, spec);
     }
 
     public void addMemberExtended(int mid, int aid, String name, String email, String phone, int coachId) {
         int newAccountId = Database.generateRandomUniqueId("Account.csv");
         Database.writeAccount(newAccountId, "mem_" + newAccountId, "pass123", SRole.MEMBER, name, email, phone);
-
         int newMemberId = Database.generateRandomUniqueId("members.csv");
         String endDate = LocalDate.now().plusMonths(1).toString();
         Database.writeMember(newMemberId, newAccountId, name, endDate, coachId);
@@ -164,6 +162,10 @@ public class Admin extends Account{
 
     public void deleteCoachAndAccount(int coachId, int accId) {
         Database.deleteCoachById(coachId);
+        Database.deleteAccountById(accId);
+    }
+    public void deleteMemberAndAccount(int memberId, int accId) {
+        Database.deleteMemberById(memberId);
         Database.deleteAccountById(accId);
     }
 }

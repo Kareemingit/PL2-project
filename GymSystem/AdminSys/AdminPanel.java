@@ -382,23 +382,21 @@ class AdminMembersPanel extends JPanel {
             JOptionPane.showMessageDialog(this, "Select a member to delete");
             return;
         }
-
         int memberId = Integer.parseInt(model.getValueAt(row, 0).toString());
-        int accountId = Integer.parseInt(model.getValueAt(row, 1).toString());
+        int accId = Integer.parseInt(model.getValueAt(row, 1).toString());
 
         int confirm = JOptionPane.showConfirmDialog(
                 this,
-                "This will permanently delete the member.\n"
-            + "If an account exists, it will also be deleted.\n\nContinue?",
-                "Confirm Delete",
+                "Delete Member and their Login Account?",
+                "Confirm",
                 JOptionPane.YES_NO_OPTION
         );
 
-        if (confirm != JOptionPane.YES_OPTION) return;
-
-        parent.me.deleteMemberCascade(memberId, accountId);
-        refresh();
-
+        if (confirm == JOptionPane.YES_OPTION) {
+            parent.me.deleteMemberAndAccount(memberId, accId);
+            parent.refreshAllTabs();
+            JOptionPane.showMessageDialog(this, "Member and Account deleted successfully.");
+        }
     }
 
     void searchMember() {
@@ -635,12 +633,17 @@ class AdminCoachesPanel extends JPanel {
         }
         int coachId = Integer.parseInt(model.getValueAt(row, 0).toString());
         int accId = Integer.parseInt(model.getValueAt(row, 1).toString());
-        int confirm = JOptionPane.showConfirmDialog(this, "Delete Coach " + coachId + "?", "Confirm", JOptionPane.YES_NO_OPTION);
 
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Delete Coach and their Login Account?",
+                "Confirm",
+                JOptionPane.YES_NO_OPTION
+        );
         if (confirm == JOptionPane.YES_OPTION) {
-            parent.me.deleteCoachCascade(coachId);
+            parent.me.deleteCoachAndAccount(coachId, accId);
             parent.refreshAllTabs();
-            JOptionPane.showMessageDialog(this, "Coach deleted and table refreshed!");
+            JOptionPane.showMessageDialog(this, "Coach and Login Account deleted.");
         }
     }
     

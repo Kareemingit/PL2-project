@@ -254,16 +254,17 @@ public class Database {
         ArrayList<ArrayList<String>> accounts = readAccounts();
         ArrayList<String> lines = new ArrayList<>();
         for (ArrayList<String> a : accounts) {
-            if (Integer.parseInt(a.get(0)) != id) lines.add(String.join(",", a));
+            if (Integer.parseInt(a.get(0).trim()) != id)
+                lines.add(String.join(",", a));
         }
-        try { Files.write(DATA_DIR.resolve("Account.csv"), lines); } catch (IOException e) { e.printStackTrace(); }
+        try { Files.write(DATA_DIR.resolve("Account.csv"), lines); }
+        catch (IOException e) { e.printStackTrace(); }
     }
 
     public static boolean accountExists(int id) {
         return readAccounts().stream().anyMatch(a -> Integer.parseInt(a.get(0)) == id);
     }
 
-    // You must also add empty stubs for these to clear the remaining errors:
     public static void deleteMemberById(int id) {
         ArrayList<ArrayList<String>> members = readMembers();
         ArrayList<String> lines = new ArrayList<>();
