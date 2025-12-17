@@ -23,12 +23,21 @@ public class User extends Account{
     public String getPhone() { return phone; }
 
     public void updateInformation(String username, String password, String name, String email, String phone) {
+        // 1. Update local object memory
         if (username != null && !username.isEmpty()) this.username = username;
         if (password != null && !password.isEmpty()) this.password = password;
         if (name != null && !name.isEmpty()) this.name = name;
         if (email != null && !email.isEmpty()) this.email = email;
         if (phone != null && !phone.isEmpty()) this.phone = phone;
-        
-        System.out.println("User info updated for ID: " + this.id);
+
+        GymSystem.Database.updateAccount(
+                this.id,
+                this.username,
+                this.password,
+                this.role.name(),
+                this.name,
+                this.email,
+                this.phone
+        );
     }
 }

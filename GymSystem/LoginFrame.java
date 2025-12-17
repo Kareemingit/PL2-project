@@ -107,14 +107,22 @@ public class LoginFrame extends JFrame {
                 );
                 new MemberPanel(mAcc).setVisible(true);
                 this.dispose();
-                break;            case USER:
-                Account uAcc = new Account(
-                        Integer.parseInt(a.get(0)), a.get(1), a.get(2), SRole.USER,
-                        (a.size() > 4 ? a.get(4) : "User"), "", ""
+                break;
+            case USER:
+                GymSystem.UserSys.User userObj = new GymSystem.UserSys.User(
+                        Integer.parseInt(a.get(0)), // ID
+                        a.get(1),                   // Username
+                        a.get(2),                   // Password
+                        (a.size() > 4 ? a.get(4) : "User"), // Name
+                        (a.size() > 5 ? a.get(5) : ""),     // Email
+                        (a.size() > 6 ? a.get(6) : "")      // Phone
                 );
-                new UserPanel((User) uAcc).setVisible(true);
+
+                new GymSystem.UserSys.UserPanel(userObj).setVisible(true);
                 this.dispose();
-                break;            default:
+                break;
+
+                default:
                 break;
         }
     }

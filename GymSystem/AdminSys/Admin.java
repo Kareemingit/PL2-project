@@ -65,7 +65,7 @@ public class Admin extends Account{
     }
     
     public void editAccount(int id, String username, String password, SRole role,String name, String email, String phone) {
-        Database.updateAccount(id, username, password, role, name, email, phone);
+        Database.updateAccount(id, username, password, role.name(), name, email, phone);
     }
 
     public void deleteAccountCascade(int accountId, SRole role) {

@@ -35,17 +35,19 @@ public class UserPanel extends JFrame {
     }
 
     private void updateInfo() {
-        String newUsername = JOptionPane.showInputDialog(this, "Enter new username:", currentUser.getUsername());
-        String newPassword = JOptionPane.showInputDialog(this, "Enter new password:", currentUser.getPassword());
-        String newName     = JOptionPane.showInputDialog(this, "Enter new name:", currentUser.getName());
-        String newEmail    = JOptionPane.showInputDialog(this, "Enter new email:", currentUser.getEmail());
-        String newPhone    = JOptionPane.showInputDialog(this, "Enter new phone:", currentUser.getPhone());
+        String newUsername = JOptionPane.showInputDialog(this, "New username:", currentUser.getUsername());
+        if (newUsername == null) return; // User clicked cancel
 
-        if(newUsername != null && newPassword != null && newName != null && newEmail != null && newPhone != null) {
+        String newPassword = JOptionPane.showInputDialog(this, "New password:", currentUser.getPassword());
+        String newName     = JOptionPane.showInputDialog(this, "New name:", currentUser.getName());
+        String newEmail    = JOptionPane.showInputDialog(this, "New email:", currentUser.getEmail());
+        String newPhone    = JOptionPane.showInputDialog(this, "New phone:", currentUser.getPhone());
+
+        if(newPassword != null && newName != null && newEmail != null && newPhone != null) {
             currentUser.updateInformation(newUsername, newPassword, newName, newEmail, newPhone);
-            JOptionPane.showMessageDialog(this, "Information updated successfully!");
-
+            JOptionPane.showMessageDialog(this, "Profile updated and saved!");
             setTitle("User - " + newUsername);
+            this.getContentPane().removeAll();
             revalidate();
             repaint();
         }

@@ -237,17 +237,24 @@ public class Database {
             e.printStackTrace();
         }
     }
-    // Add these to Database.java to resolve image_1472f9.png errors
 
-    public static void updateAccount(int id, String un, String pw, SRole role, String name, String mail, String phone) {
+    public static void updateAccount(int id, String un, String pw, String role, String name, String email, String phone) {
         ArrayList<ArrayList<String>> accounts = readAccounts();
         ArrayList<String> lines = new ArrayList<>();
+
         for (ArrayList<String> a : accounts) {
-            if (Integer.parseInt(a.get(0)) == id) {
-                lines.add(id + "," + escape(un) + "," + escape(pw) + "," + role.name() + "," + escape(name) + "," + escape(mail) + "," + escape(phone));
-            } else lines.add(String.join(",", a));
+            if (Integer.parseInt(a.get(0).trim()) == id) {
+                // Write the updated data back
+                lines.add(id + "," + un + "," + pw + "," + role + "," + name + "," + email + "," + phone);
+            } else {
+                lines.add(String.join(",", a));
+            }
         }
-        try { Files.write(DATA_DIR.resolve("Account.csv"), lines); } catch (IOException e) { e.printStackTrace(); }
+        try {
+            Files.write(DATA_DIR.resolve("Account.csv"), lines);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void deleteAccountById(int id) {
