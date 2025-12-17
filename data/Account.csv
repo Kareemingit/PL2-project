@@ -1,7 +1,3 @@
-//for member and coach:
-//first id column:The Member ID (Unique ID) for the membership record
-//second id column:The Account ID (The login ID from Account.csv)
-
 1,admin,admin123,ADMIN,Administrator,admin@gym.com,0123456789
 1513,coach_1513,pass123,COACH,arbcman,efdvdzg@gmail.com,01122132343
 7909,coach_7909,pass123,COACH,tamer elgayar,gayaar@gmail.com,01113674228
@@ -12,5 +8,4 @@
 7562,coach_7562,pass123,COACH,moza,moza@gmail.com,01046728334
 8238,Admin,Admin,ADMIN,Admin,Admin@gmail.com,01256684387
 8239,user1,user1,USER,user1,user1@gmail.com,012758359897
-4067,mem_4067,pass123,MEMBER,ashraf,rtvecd@gmail.com,01264860998
 9620,mem_9620,pass123,MEMBER,kota,kot@gmail.com,012354785955

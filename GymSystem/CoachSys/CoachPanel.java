@@ -26,6 +26,15 @@ public class CoachPanel extends JFrame {
         tabbedPane.addTab("Create Member Plan", createPlanPanel());
         tabbedPane.addTab("Send Message", createMessagePanel());
         add(tabbedPane);
+        JButton btnLogout = new JButton("Logout");
+        btnLogout.addActionListener(e -> {
+            this.dispose();
+            new GymSystem.LoginFrame().setVisible(true);
+        });
+
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.add(btnLogout);
+        add(bottomPanel, BorderLayout.SOUTH);
     }
 
     private JPanel createPlanPanel() {
