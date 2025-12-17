@@ -44,7 +44,7 @@ public class LoginFrame extends JFrame {
         txtPass.addActionListener(e->doLogin());
         txtUser.addActionListener(e->txtPass.requestFocusInWindow());
     }
-    
+    //helper fun for dologin
     ArrayList<String> authenticate(String username , String password){
         ArrayList<ArrayList<String>> accounts = Database.readAccounts();
         for (ArrayList<String> account : accounts) {
