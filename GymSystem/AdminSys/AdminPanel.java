@@ -703,8 +703,8 @@ class AdminBillingPanel extends JPanel {
             double amount = Double.parseDouble(txtAmount.getText().trim());
             String date = txtDate.getText().trim();
             String note = txtNote.getText().trim();
-            if (!Database.accountExists(memberId)) {
-                JOptionPane.showMessageDialog(this, "❌ Error: Account ID " + memberId + " not found!");
+            if (!Database.checkIfIdExistsInFile(memberId, "members.csv")) {
+                JOptionPane.showMessageDialog(this, "Error: ID " + memberId + " is not a registered Member!");
                 return;
             }
             if(note.isEmpty()) note = "-";
