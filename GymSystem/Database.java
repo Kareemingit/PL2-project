@@ -342,7 +342,7 @@ public class Database {
     }
 
     public static ArrayList<ArrayList<String>> readBillings() {
-        Path p = DATA_DIR.resolve("billings.csv");
+        Path p = DATA_DIR.resolve("billing.csv");
         ArrayList<ArrayList<String>> billings = new ArrayList<>();
         if (!Files.exists(p)) return billings;
 
@@ -358,7 +358,7 @@ public class Database {
     }
 
     public static void writeBilling(int id, int mid, double amt, String date, String desc) {
-        Path p = DATA_DIR.resolve("billings.csv");
+        Path p = DATA_DIR.resolve("billing.csv");
         String row = String.format(java.util.Locale.US, "%d,%d,%.2f,%s,%s",
                 id, mid, amt, escape(date), escape(desc));
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(p.toString(), true))) {
@@ -366,7 +366,7 @@ public class Database {
             writer.newLine();
             writer.flush();
         } catch (IOException e) {
-            System.err.println("Error writing to billings.csv: " + e.getMessage());
+            System.err.println("Error writing to billing.csv: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -380,7 +380,7 @@ public class Database {
             }
         }
         try {
-            Files.write(DATA_DIR.resolve("billings.csv"), lines);
+            Files.write(DATA_DIR.resolve("billing.csv"), lines);
         } catch (IOException e) { e.printStackTrace(); }
     }
     public static int generateRandomUniqueId(String fileName) {

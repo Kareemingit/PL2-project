@@ -635,7 +635,7 @@ class AdminCoachesPanel extends JPanel {
             if (match) {
                 model.addRow(new Object[]{
                         c.get(0), // Coach ID
-                        c.get(1), // Account ID (if exists)
+                        c.get(1), // Account ID
                         c.get(2), // Name
                         c.get(3)  // Specialty / Phone
                 });

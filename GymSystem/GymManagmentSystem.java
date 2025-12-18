@@ -38,13 +38,11 @@ public class GymManagmentSystem {
         }
         if (!Files.exists(coaches)) {
             List<String> lines = new ArrayList<>();
-            // id,userId,name,specialty
             lines.add("1,2,Ahmed Ali,Weight Training");
             Files.write(coaches, lines);
         }
         if (!Files.exists(members)) {
             List<String> lines = new ArrayList<>();
-            // id,userId,name,subscriptionEnd,coachId
             lines.add("1,3,Mohamed Samir," + LocalDate.now().plusDays(10).format(DATE_FMT) + ",1");
             Files.write(members, lines);
         }

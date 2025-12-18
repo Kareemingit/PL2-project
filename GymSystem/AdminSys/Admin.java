@@ -123,12 +123,14 @@ public class Admin extends Account{
     }
 
     public void addBilling(int billID ,int memberId, double amount, String date, String note) {
-        ArrayList<ArrayList<String>> billings = Database.readBillings();
+        ArrayList<ArrayList<String>> billing = Database.readBillings();
         int maxId = billID;
         if(billID <= 0){
-            for (ArrayList<String> b : billings) {
-                int id = Integer.parseInt(b.get(0));
-                if (id > maxId) maxId = id;
+            for (ArrayList<String> b : billing) {
+                try {
+                    int id = Integer.parseInt(b.get(0).trim());
+                    if (id > maxId) maxId = id;
+                } catch (Exception e) {}
             }
         }
         int billingId = maxId + 1;
