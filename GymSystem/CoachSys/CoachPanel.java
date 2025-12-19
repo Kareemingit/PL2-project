@@ -123,7 +123,7 @@ public class CoachPanel extends JFrame {
         txtMessageContent.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         panel.add(new JScrollPane(txtMessageContent), BorderLayout.CENTER);
 
-        JButton btnSendMessage = new JButton("Send Broadcast Message");
+        JButton btnSendMessage = new JButton("Send Message to all traniees");
         btnSendMessage.setBackground(new Color(46, 204, 113));
         btnSendMessage.setForeground(Color.WHITE);
         btnSendMessage.setFocusPainted(false);
