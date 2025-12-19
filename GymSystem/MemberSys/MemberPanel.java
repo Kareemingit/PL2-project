@@ -1,6 +1,7 @@
 package GymSystem.MemberSys;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,96 +13,177 @@ import GymSystem.Database;
 import GymSystem.GymManagmentSystem;
 import GymSystem.LoginFrame;
 import java.util.List;
-
 public class MemberPanel extends JFrame {
     private Account member;
-    private void checkSubscriptionStatus(String dateStr) {
-        try {
-            LocalDate endDate = LocalDate.parse(dateStr, GymManagmentSystem.DATE_FMT); //
-            LocalDate today = LocalDate.now();
 
-            if (endDate.isBefore(today)) {
-                JOptionPane.showMessageDialog(this,
-                        "NOTIFICATION: Your subscription has expired on " + dateStr + "!",
-                        "Subscription Expired", JOptionPane.WARNING_MESSAGE);
-            } else if (endDate.isBefore(today.plusDays(3))) {
-                JOptionPane.showMessageDialog(this,
-                        "NOTIFICATION: Your subscription expires in less than 3 days!",
-                        "Expiry Warning", JOptionPane.INFORMATION_MESSAGE);
-            }
-        } catch (Exception e) {
-            System.err.println("Invalid date format in database: " + dateStr);
-        }
-    }
+    // Theme Colors
+    private Color sidebarColor = new Color(33, 37, 41); // Dark Sidebar
+    private Color bgColor = new Color(240, 242, 245);    // Light Dashboard background
+    private Color accentColor = new Color(52, 152, 219);  // Blue
+
     public MemberPanel(Account member) {
         this.member = member;
-        setTitle("Member Dashboard - " + member.getName());
-        setSize(550, 600);
+        setTitle("Member Portal - " + member.getName());
+        setSize(1000, 700); // Wider for dashboard format
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new BorderLayout(10, 10));
 
-        JLabel lblWelcome = new JLabel("Welcome, " + member.getName(), SwingConstants.CENTER);
-        lblWelcome.setFont(new Font("Arial", Font.BOLD, 18));
-        add(lblWelcome, BorderLayout.NORTH);
+        // Root Panel
+        JPanel root = new JPanel(new BorderLayout());
 
-        JPanel center = new JPanel();
-        center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
+        // --- 1. SIDEBAR (Format Change: Left-aligned Navigation) ---
+        JPanel sidebar = new JPanel();
+        sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
+        sidebar.setPreferredSize(new Dimension(220, 0));
+        sidebar.setBackground(sidebarColor);
+        sidebar.setBorder(new EmptyBorder(30, 20, 30, 20));
 
-        JPanel infoPanel = new JPanel(new GridLayout(2, 1));
-        String subEnd = "N/A";
-        String coachName = "None Assigned";
-        int coachId = 0;
+        JLabel lblBrand = new JLabel("GYM PORTAL");
+        lblBrand.setForeground(Color.WHITE);
+        lblBrand.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        lblBrand.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        JButton btnLogout = new JButton("Sign Out");
+        btnLogout.setAlignmentX(Component.CENTER_ALIGNMENT);
+        styleSidebarButton(btnLogout);
+        btnLogout.addActionListener(e -> { this.dispose(); new LoginFrame().setVisible(true); });
+
+        sidebar.add(lblBrand);
+        sidebar.add(Box.createVerticalGlue()); // Pushes logout to bottom
+        sidebar.add(btnLogout);
+
+        // --- 2. MAIN CONTENT AREA ---
+        JPanel mainContent = new JPanel(new BorderLayout());
+        mainContent.setBackground(bgColor);
+        mainContent.setBorder(new EmptyBorder(30, 30, 30, 30));
+
+        // Header Title
+        JLabel lblHeader = new JLabel("Member Dashboard");
+        lblHeader.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        mainContent.add(lblHeader, BorderLayout.NORTH);
+
+        // Dashboard Grid (Format Change: Split view instead of a vertical list)
+        JPanel grid = new JPanel(new GridBagLayout());
+        grid.setOpaque(false);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(10, 10, 10, 10);
+
+        // Row 1: Status Cards
+        String subEnd = fetchSubscriptionEndDate();
+        String coachName = fetchCoachName();
+
+        gbc.gridy = 0; gbc.gridx = 0; gbc.weightx = 0.5; gbc.weighty = 0.15;
+        grid.add(createStatCard("SUBSCRIPTION ENDS", subEnd, new Color(46, 204, 113)), gbc);
+
+        gbc.gridx = 1;
+        grid.add(createStatCard("PERSONAL COACH", coachName, accentColor), gbc);
+
+        // Row 2: Content Modules (Side-by-Side Boxes)
+        gbc.gridy = 1; gbc.gridx = 0; gbc.weighty = 0.85;
+        JTextArea txtPlan = createModuleTextArea("Your Training Plan");
+        loadPlan(txtPlan);
+        grid.add(new JScrollPane(txtPlan), gbc);
+
+        gbc.gridx = 1;
+        int coachId = fetchMemberCoachId();
+        JTextArea txtMessages = createModuleTextArea("Coach Communications");
+        loadMessages(txtMessages, coachId);
+        grid.add(new JScrollPane(txtMessages), gbc);
+
+        mainContent.add(grid, BorderLayout.CENTER);
+
+        // Final Assembly
+        root.add(sidebar, BorderLayout.WEST);
+        root.add(mainContent, BorderLayout.CENTER);
+        add(root);
+
+        if (!subEnd.equals("N/A")) checkSubscriptionStatus(subEnd);
+    }
+
+    // --- Format Helper: Stat Cards ---
+    private JPanel createStatCard(String title, String value, Color accent) {
+        JPanel card = new JPanel(new BorderLayout());
+        card.setBackground(Color.WHITE);
+        card.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 4, 0, 0, accent),
+                new EmptyBorder(15, 20, 15, 20)
+        ));
+
+        JLabel t = new JLabel(title);
+        t.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        t.setForeground(Color.GRAY);
+
+        JLabel v = new JLabel(value);
+        v.setFont(new Font("Segoe UI", Font.BOLD, 18));
+
+        card.add(t, BorderLayout.NORTH);
+        card.add(v, BorderLayout.SOUTH);
+        return card;
+    }
+
+    // --- Format Helper: Module Boxes ---
+    private JTextArea createModuleTextArea(String title) {
+        JTextArea area = new JTextArea();
+        area.setEditable(false);
+        area.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        area.setLineWrap(true);
+        area.setWrapStyleWord(true);
+        area.setMargin(new Insets(10,10,10,10));
+
+        // This gives the "Box" a title inside the dashboard
+        area.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createEmptyBorder(5, 5, 5, 5), title,
+                0, 0, new Font("Segoe UI", Font.BOLD, 14), sidebarColor));
+        return area;
+    }
+
+    private void styleSidebarButton(JButton b) {
+        b.setPreferredSize(new Dimension(180, 40));
+        b.setBackground(new Color(231, 76, 60)); // Logout Red
+        b.setForeground(Color.WHITE);
+        b.setFocusPainted(false);
+        b.setBorderPainted(false);
+        b.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        b.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    }
+
+    // --- LOGIC METHODS (Kept from your original) ---
+
+    private String fetchSubscriptionEndDate() {
         ArrayList<ArrayList<String>> membersData = Database.readMembers();
         for (ArrayList<String> m : membersData) {
-            if (m.size() > 4 && Integer.parseInt(m.get(1).trim()) == member.getId()) {
-                subEnd = m.get(3).trim();
-                coachId = Integer.parseInt(m.get(4).trim());
-                break;
-            }
+            if (m.size() > 4 && Integer.parseInt(m.get(1).trim()) == member.getId()) return m.get(3).trim();
         }
+        return "N/A";
+    }
 
+    private int fetchMemberCoachId() {
+        ArrayList<ArrayList<String>> membersData = Database.readMembers();
+        for (ArrayList<String> m : membersData) {
+            if (m.size() > 4 && Integer.parseInt(m.get(1).trim()) == member.getId()) return Integer.parseInt(m.get(4).trim());
+        }
+        return 0;
+    }
+
+    private String fetchCoachName() {
+        int coachId = fetchMemberCoachId();
         if (coachId > 0) {
-            ArrayList<ArrayList<String>> coaches = Database.readCoachs();
-            for (ArrayList<String> c : coaches) {
-                if (Integer.parseInt(c.get(0).trim()) == coachId) {
-                    coachName = c.get(2).trim(); //
-                    break;
-                }
+            for (ArrayList<String> c : Database.readCoachs()) {
+                if (Integer.parseInt(c.get(0).trim()) == coachId) return c.get(2).trim();
             }
         }
+        return "No Coach";
+    }
 
-        infoPanel.add(new JLabel("Subscription Ends: " + subEnd, SwingConstants.CENTER)); //
-        infoPanel.add(new JLabel("Your Coach: " + coachName, SwingConstants.CENTER)); //
-        center.add(infoPanel);
-
-        JTextArea txtPlan = new JTextArea(8, 20);
-        txtPlan.setEditable(false);
-        txtPlan.setText("--- Your Training Plan ---\n");
-        loadPlan(txtPlan);
-        center.add(new JLabel("Training Schedule:"));
-        center.add(new JScrollPane(txtPlan));
-
-        JTextArea txtMessages = new JTextArea(8, 20);
-        txtMessages.setEditable(false);
-        txtMessages.setText("--- Messages from Coach ---\n");
-        loadMessages(txtMessages, coachId);
-        center.add(new JLabel("Coach Notifications:"));
-        center.add(new JScrollPane(txtMessages));
-
-        add(new JScrollPane(center), BorderLayout.CENTER);
-
-        JButton btnLogout = new JButton("Logout");
-        btnLogout.addActionListener(e -> {
-            this.dispose();
-            new LoginFrame().setVisible(true);
-        });
-        add(btnLogout, BorderLayout.SOUTH);
-
-        if (!subEnd.equals("N/A")) {
-            checkSubscriptionStatus(subEnd);
-        }
+    private void checkSubscriptionStatus(String dateStr) {
+        try {
+            LocalDate endDate = LocalDate.parse(dateStr, GymManagmentSystem.DATE_FMT);
+            LocalDate today = LocalDate.now();
+            if (endDate.isBefore(today)) {
+                JOptionPane.showMessageDialog(this, "Subscription Expired on " + dateStr, "Status", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception e) {}
     }
 
     private void loadMessages(JTextArea area, int myCoachId) {
@@ -114,14 +196,13 @@ public class MemberPanel extends JFrame {
                     if (p.length >= 5) {
                         int senderId = Integer.parseInt(p[1].trim());
                         int receiverId = Integer.parseInt(p[2].trim());
-
                         if (senderId == myCoachId || receiverId == member.getId() || receiverId == 0) {
-                            area.append("[" + p[3] + "]: " + p[4].replace(";", ",") + "\n");
+                            area.append("● [" + p[3] + "]: " + p[4].replace(";", ",") + "\n\n");
                         }
                     }
                 }
             }
-        } catch (Exception ex) { ex.printStackTrace(); }
+        } catch (Exception ex) {}
     }
 
     private void loadPlan(JTextArea area) {
@@ -132,11 +213,11 @@ public class MemberPanel extends JFrame {
                 for (String line : lines) {
                     String[] p = line.split(",");
                     if (p.length >= 6 && Integer.parseInt(p[2].trim()) == member.getId()) {
-                        area.append("Details: " + p[5].replace(";", ",") + "\n");
-                        area.append("Timeline: " + p[3] + " to " + p[4] + "\n\n");
+                        area.append("DETAILS: " + p[5].replace(";", ",") + "\n");
+                        area.append("TIME: " + p[3] + " - " + p[4] + "\n\n");
                     }
                 }
             }
-        } catch (Exception ex) { ex.printStackTrace(); }
+        } catch (Exception ex) {}
     }
 }

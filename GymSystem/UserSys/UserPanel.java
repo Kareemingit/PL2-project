@@ -3,55 +3,96 @@ package GymSystem.UserSys;
 //import GymSystem.GUI.LoginFrame;
 import GymSystem.LoginFrame;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class UserPanel extends JFrame {
     private User currentUser;
 
+    // Theme Colors
+    private Color sidebarColor = new Color(33, 37, 41);
+    private Color bgColor = new Color(240, 242, 245);
+    private Color accentColor = new Color(52, 152, 219);
+
     public UserPanel(User user) {
         this.currentUser = user;
 
-        setTitle("User - " + currentUser.getUsername());
-        setSize(400, 300);
+        setTitle("Account Settings - " + currentUser.getUsername());
+        setSize(850, 600); // Larger, more professional scale
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout());
 
-        add(new JLabel("Welcome, " + currentUser.getName(), SwingConstants.CENTER), BorderLayout.CENTER);
+        // Root Layout
+        JPanel root = new JPanel(new BorderLayout());
 
-        JPanel top = new JPanel(new BorderLayout());
-        top.add(new JLabel("  Logged in as: " + currentUser.getUsername()), BorderLayout.WEST);
+        // --- 1. SIDEBAR (Navigation Link Structure) ---
+        JPanel sidebar = new JPanel();
+        sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
+        sidebar.setPreferredSize(new Dimension(200, 0));
+        sidebar.setBackground(sidebarColor);
+        sidebar.setBorder(new EmptyBorder(30, 20, 30, 20));
 
-        JButton btnLogout = new JButton("Logout");
+        JLabel lblLogo = new JLabel("USER PORTAL");
+        lblLogo.setForeground(Color.WHITE);
+        lblLogo.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        lblLogo.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Sidebar Links
+        JButton btnProfile = createSidebarLink("My Profile", true);
+        JButton btnLogout = createSidebarLink("Logout", false);
+
         btnLogout.addActionListener(e -> logout());
-        top.add(btnLogout, BorderLayout.EAST);
-        add(top, BorderLayout.NORTH);
 
-        JButton btnEdit = new JButton("Update info");
-        btnEdit.addActionListener(e -> updateInfo());
-        add(btnEdit, BorderLayout.SOUTH);
+        sidebar.add(lblLogo);
+        sidebar.add(Box.createRigidArea(new Dimension(0, 50)));
+        sidebar.add(btnProfile);
+        sidebar.add(Box.createVerticalGlue());
+        sidebar.add(btnLogout);
 
-        setVisible(true);
-    }
+        // --- 2. MAIN CONTENT (Card-Based Format) ---
+        JPanel contentArea = new JPanel(new GridBagLayout());
+        contentArea.setBackground(bgColor);
+        contentArea.setBorder(new EmptyBorder(40, 40, 40, 40));
 
-    private void updateInfo() {
-        JTextField unField = new JTextField(currentUser.getUsername());
-        JTextField pwField = new JTextField(currentUser.getPassword());
-        JTextField nameField = new JTextField(currentUser.getName());
-        JTextField emailField = new JTextField(currentUser.getEmail());
-        JTextField phoneField = new JTextField(currentUser.getPhone());
+        // Profile Settings Card
+        JPanel settingsCard = new JPanel();
+        settingsCard.setLayout(new BoxLayout(settingsCard, BoxLayout.Y_AXIS));
+        settingsCard.setBackground(Color.WHITE);
+        settingsCard.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(220, 220, 220)),
+                new EmptyBorder(30, 40, 30, 40)
+        ));
 
-        Object[] message = {
-                "Username:", unField,
-                "Password:", pwField,
-                "Full Name:", nameField,
-                "Email:", emailField,
-                "Phone:", phoneField
-        };
+        JLabel lblTitle = new JLabel("Account Information");
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        lblTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+        settingsCard.add(lblTitle);
+        settingsCard.add(Box.createRigidArea(new Dimension(0, 25)));
 
-        int option = JOptionPane.showConfirmDialog(this, message, "Update Profile", JOptionPane.OK_CANCEL_OPTION);
+        // Form Fields (Format: Vertical Input Stack)
+        JTextField unField = createStyledField(currentUser.getUsername());
+        JTextField pwField = createStyledField(currentUser.getPassword());
+        JTextField nameField = createStyledField(currentUser.getName());
+        JTextField emailField = createStyledField(currentUser.getEmail());
+        JTextField phoneField = createStyledField(currentUser.getPhone());
 
-        if (option == JOptionPane.OK_OPTION) {
+        addFormField(settingsCard, "Username", unField);
+        addFormField(settingsCard, "Password", pwField);
+        addFormField(settingsCard, "Full Name", nameField);
+        addFormField(settingsCard, "Email Address", emailField);
+        addFormField(settingsCard, "Phone Number", phoneField);
+
+        // Save Button
+        JButton btnSave = new JButton("Update Profile Information");
+        btnSave.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnSave.setBackground(accentColor);
+        btnSave.setForeground(Color.WHITE);
+        btnSave.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        btnSave.setFocusPainted(false);
+        btnSave.setBorder(new EmptyBorder(10, 20, 10, 20));
+        btnSave.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        btnSave.addActionListener(e -> {
             currentUser.updateInformation(
                     unField.getText().trim(),
                     pwField.getText().trim(),
@@ -59,17 +100,68 @@ public class UserPanel extends JFrame {
                     emailField.getText().trim(),
                     phoneField.getText().trim()
             );
-            JOptionPane.showMessageDialog(this, "Profile Updated!");
-        }
+            JOptionPane.showMessageDialog(this, "Profile Updated Successfully!");
+        });
+
+        settingsCard.add(Box.createRigidArea(new Dimension(0, 10)));
+        settingsCard.add(btnSave);
+
+        // Center the card in the content area
+        contentArea.add(settingsCard);
+
+        root.add(sidebar, BorderLayout.WEST);
+        root.add(contentArea, BorderLayout.CENTER);
+        add(root);
+
+        setVisible(true);
     }
+
+    // --- Helper for Sidebar Links ---
+    private JButton createSidebarLink(String text, boolean active) {
+        JButton btn = new JButton(text);
+        btn.setMaximumSize(new Dimension(180, 40));
+        btn.setFont(new Font("Segoe UI", active ? Font.BOLD : Font.PLAIN, 14));
+        btn.setForeground(active ? Color.WHITE : new Color(180, 180, 180));
+        btn.setBackground(sidebarColor);
+        btn.setBorderPainted(false);
+        btn.setFocusPainted(false);
+        btn.setContentAreaFilled(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn.setHorizontalAlignment(SwingConstants.LEFT);
+        return btn;
+    }
+
+    // --- Helper for Input Fields ---
+    private void addFormField(JPanel panel, String label, JTextField field) {
+        JLabel l = new JLabel(label);
+        l.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        l.setForeground(Color.GRAY);
+        l.setAlignmentX(Component.LEFT_ALIGNMENT);
+        panel.add(l);
+        panel.add(Box.createRigidArea(new Dimension(0, 5)));
+        panel.add(field);
+        panel.add(Box.createRigidArea(new Dimension(0, 15)));
+    }
+
+    private JTextField createStyledField(String text) {
+        JTextField f = new JTextField(text);
+        f.setMaximumSize(new Dimension(400, 35));
+        f.setPreferredSize(new Dimension(400, 35));
+        f.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        f.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                new EmptyBorder(5, 10, 5, 10)
+        ));
+        return f;
+    }
+
     private void logout() {
         this.dispose();
-
         SwingUtilities.invokeLater(() -> {
             try {
                 new LoginFrame().setVisible(true);
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "LoginFrame not found! \nError: " + ex.getMessage());
+                JOptionPane.showMessageDialog(null, "LoginFrame not found!");
             }
         });
     }
