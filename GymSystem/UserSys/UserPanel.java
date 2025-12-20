@@ -1,6 +1,5 @@
 package GymSystem.UserSys;
 
-//import GymSystem.GUI.LoginFrame;
 import GymSystem.LoginFrame;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -9,7 +8,6 @@ import java.awt.*;
 public class UserPanel extends JFrame {
     private User currentUser;
 
-    // Theme Colors
     private Color sidebarColor = new Color(33, 37, 41);
     private Color bgColor = new Color(240, 242, 245);
     private Color accentColor = new Color(52, 152, 219);
@@ -22,10 +20,8 @@ public class UserPanel extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Root Layout
         JPanel root = new JPanel(new BorderLayout());
 
-        // --- 1. SIDEBAR (Navigation Link Structure) ---
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
         sidebar.setPreferredSize(new Dimension(200, 0));
@@ -37,7 +33,6 @@ public class UserPanel extends JFrame {
         lblLogo.setFont(new Font("Segoe UI", Font.BOLD, 18));
         lblLogo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Sidebar Links
         JButton btnProfile = createSidebarLink("My Profile", true);
         JButton btnLogout = createSidebarLink("Logout", false);
 
@@ -49,12 +44,10 @@ public class UserPanel extends JFrame {
         sidebar.add(Box.createVerticalGlue());
         sidebar.add(btnLogout);
 
-        // --- 2. MAIN CONTENT (Card-Based Format) ---
         JPanel contentArea = new JPanel(new GridBagLayout());
         contentArea.setBackground(bgColor);
         contentArea.setBorder(new EmptyBorder(40, 40, 40, 40));
 
-        // Profile Settings Card
         JPanel settingsCard = new JPanel();
         settingsCard.setLayout(new BoxLayout(settingsCard, BoxLayout.Y_AXIS));
         settingsCard.setBackground(Color.WHITE);
@@ -69,7 +62,6 @@ public class UserPanel extends JFrame {
         settingsCard.add(lblTitle);
         settingsCard.add(Box.createRigidArea(new Dimension(0, 25)));
 
-        // Form Fields (Format: Vertical Input Stack)
         JTextField unField = createStyledField(currentUser.getUsername());
         JTextField pwField = createStyledField(currentUser.getPassword());
         JTextField nameField = createStyledField(currentUser.getName());
@@ -82,7 +74,6 @@ public class UserPanel extends JFrame {
         addFormField(settingsCard, "Email Address", emailField);
         addFormField(settingsCard, "Phone Number", phoneField);
 
-        // Save Button
         JButton btnSave = new JButton("Update Profile Information");
         btnSave.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnSave.setBackground(accentColor);
@@ -106,7 +97,6 @@ public class UserPanel extends JFrame {
         settingsCard.add(Box.createRigidArea(new Dimension(0, 10)));
         settingsCard.add(btnSave);
 
-        // Center the card in the content area
         contentArea.add(settingsCard);
 
         root.add(sidebar, BorderLayout.WEST);
@@ -116,7 +106,6 @@ public class UserPanel extends JFrame {
         setVisible(true);
     }
 
-    // --- Helper for Sidebar Links ---
     private JButton createSidebarLink(String text, boolean active) {
         JButton btn = new JButton(text);
         btn.setMaximumSize(new Dimension(180, 40));
@@ -131,7 +120,6 @@ public class UserPanel extends JFrame {
         return btn;
     }
 
-    // --- Helper for Input Fields ---
     private void addFormField(JPanel panel, String label, JTextField field) {
         JLabel l = new JLabel(label);
         l.setFont(new Font("Segoe UI", Font.BOLD, 12));

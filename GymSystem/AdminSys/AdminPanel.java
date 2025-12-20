@@ -16,30 +16,26 @@ class AdminAccountsPanel extends JPanel {
     JTable tbl;
     DefaultTableModel model;
 
-    // --- Enterprise Dark Palette ---
-    private Color darkBg = new Color(20, 22, 26);        // Deep Obsidian
-    private Color sidebarNav = new Color(30, 34, 40);    // Slate Charcoal
-    private Color accentBlue = new Color(0, 150, 255);   // Cyber Blue
-    private Color dangerRed = new Color(220, 53, 69);    // Warning Red
+    private Color darkBg = new Color(20, 22, 26);
+    private Color sidebarNav = new Color(30, 34, 40);
+    private Color accentBlue = new Color(0, 150, 255);
+    private Color dangerRed = new Color(220, 53, 69);
     private Color textLight = new Color(220, 220, 225);
 
     public AdminAccountsPanel(AdminPanel p) {
         this.parent = p;
         setLayout(new BorderLayout());
-        setBackground(darkBg); // NO GREY OR WHITE
+        setBackground(darkBg);
 
-        // 1. DATA MODEL
         model = new DefaultTableModel(new Object[]{"ID", "Username", "Role", "Name", "Email", "Phone"}, 0) {
             @Override
             public boolean isCellEditable(int row, int col) { return false; }
         };
 
-        // 2. STYLED TABLE (Professional Grid)
         tbl = new JTable(model);
         styleDarkTable(tbl);
         refresh();
 
-        // 3. TOP CONTROL CONSOLE (Structural Change)
         JPanel controlConsole = new JPanel(new BorderLayout());
         controlConsole.setBackground(sidebarNav);
         controlConsole.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(50, 55, 65)));
@@ -53,14 +49,12 @@ class AdminAccountsPanel extends JPanel {
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 18));
         btnPanel.setOpaque(false);
 
-        // Styling your existing buttons
         JButton btnAdd = createConsoleButton("ADD USER", accentBlue);
         JButton btnEdit = createConsoleButton("EDIT", new Color(100, 100, 110));
         JButton btnSearch = createConsoleButton("SEARCH", new Color(100, 100, 110));
         JButton btnRefresh = createConsoleButton("REFRESH", new Color(100, 100, 110));
         JButton btnDelete = createConsoleButton("DELETE", dangerRed);
 
-        // Linking your existing logic
         btnAdd.addActionListener(e -> addAccount());
         btnEdit.addActionListener(e -> editAccount());
         btnDelete.addActionListener(e -> deleteAccount());
@@ -75,7 +69,6 @@ class AdminAccountsPanel extends JPanel {
 
         controlConsole.add(btnPanel, BorderLayout.EAST);
 
-        // 4. MAIN SCROLL AREA
         JScrollPane scroll = new JScrollPane(tbl);
         scroll.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         scroll.getViewport().setBackground(darkBg);
@@ -117,7 +110,6 @@ class AdminAccountsPanel extends JPanel {
         return b;
     }
 
-    // --- YOUR LOGIC (Strictly Preserved) ---
     void refresh() {
         model.setRowCount(0);
         ArrayList<ArrayList<String>> accounts = Database.readAccounts();
@@ -189,13 +181,12 @@ class UserFormDialog extends JDialog {
         setModal(true);
         setSize(450, 400);
         setLocationRelativeTo(null);
-        setUndecorated(true); // Sleek borderless look
+        setUndecorated(true);
 
         JPanel container = new JPanel(new BorderLayout());
         container.setBackground(new Color(30, 34, 40));
         container.setBorder(BorderFactory.createLineBorder(new Color(0, 150, 255), 2));
 
-        // Header
         JLabel lblHead = new JLabel("  USER CONFIGURATION", SwingConstants.LEFT);
         lblHead.setPreferredSize(new Dimension(0, 40));
         lblHead.setOpaque(true);
@@ -204,7 +195,6 @@ class UserFormDialog extends JDialog {
         lblHead.setFont(new Font("Segoe UI", Font.BOLD, 12));
         container.add(lblHead, BorderLayout.NORTH);
 
-        // Form Fields
         JPanel p = new JPanel(new GridLayout(7, 2, 10, 10));
         p.setOpaque(false);
         p.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -224,7 +214,6 @@ class UserFormDialog extends JDialog {
 
         container.add(p, BorderLayout.CENTER);
 
-        // Buttons
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         btnPanel.setOpaque(false);
         JButton ok = new JButton("SAVE CHANGES");
@@ -285,10 +274,10 @@ class AdminMembersPanel extends JPanel {
     JTable tbl;
     DefaultTableModel model;
 
-    // --- Enterprise Dark Palette ---
-    private Color darkBg = new Color(18, 20, 24);        // Darker Obsidian
-    private Color consoleGray = new Color(32, 36, 42);   // Slate Gray
-    private Color accentCyan = new Color(0, 200, 255);   // Cyan Glow
+
+    private Color darkBg = new Color(18, 20, 24);
+    private Color consoleGray = new Color(32, 36, 42);
+    private Color accentCyan = new Color(0, 200, 255);
     private Color textSilver = new Color(200, 205, 210);
 
     public AdminMembersPanel(AdminPanel p) {
@@ -296,18 +285,15 @@ class AdminMembersPanel extends JPanel {
         setLayout(new BorderLayout());
         setBackground(darkBg);
 
-        // 1. DATA MODEL
         model = new DefaultTableModel(new Object[]{"ID", "Account ID", "Member Name", "Subscription End", "Assigned Coach"}, 0) {
             @Override
             public boolean isCellEditable(int r, int c) { return false; }
         };
 
-        // 2. STYLED TABLE
         tbl = new JTable(model);
         styleAdminTable(tbl);
         refresh();
 
-        // 3. TOP CONTROL CONSOLE (Strictly matches the Account Panel layout)
         JPanel controlConsole = new JPanel(new BorderLayout());
         controlConsole.setBackground(consoleGray);
         controlConsole.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(60, 65, 75)));
@@ -321,10 +307,9 @@ class AdminMembersPanel extends JPanel {
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 18));
         btnPanel.setOpaque(false);
 
-        // Your existing button links with professional styling
         JButton btnAdd = createAdminButton("NEW MEMBER", accentCyan);
         JButton btnEdit = createAdminButton("EDIT", new Color(120, 130, 140));
-        JButton btnAssign = createAdminButton("ASSIGN COACH", new Color(155, 89, 182)); // Purple accent
+        JButton btnAssign = createAdminButton("ASSIGN COACH", new Color(155, 89, 182));
         JButton btnSearch = createAdminButton("SEARCH", new Color(120, 130, 140));
         JButton btnRefresh = createAdminButton("REFRESH", new Color(120, 130, 140));
         JButton btnDelete = createAdminButton("DELETE", new Color(231, 76, 60));
@@ -345,7 +330,6 @@ class AdminMembersPanel extends JPanel {
 
         controlConsole.add(btnPanel, BorderLayout.EAST);
 
-        // 4. MAIN TABLE AREA
         JScrollPane scroll = new JScrollPane(tbl);
         scroll.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         scroll.getViewport().setBackground(darkBg);
@@ -387,7 +371,6 @@ class AdminMembersPanel extends JPanel {
         return b;
     }
 
-    // --- YOUR LOGIC (Strictly Preserved with UI Polishing) ---
 
     void refresh() {
         model.setRowCount(0);
@@ -398,7 +381,6 @@ class AdminMembersPanel extends JPanel {
     }
 
     void addMember() {
-        // UI Components
         JTextField txtName = new JTextField();
         JTextField txtEmail = new JTextField();
         JTextField txtPhone = new JTextField();
@@ -497,10 +479,9 @@ class AdminCoachesPanel extends JPanel {
     JTable tbl;
     DefaultTableModel model;
 
-    // --- Enterprise Dark Palette ---
-    private Color darkBg = new Color(15, 18, 22);        // Deepest Obsidian
-    private Color consoleGray = new Color(28, 32, 38);   // Slate Panel
-    private Color accentEmerald = new Color(46, 204, 113); // Emerald Glow
+    private Color darkBg = new Color(15, 18, 22);
+    private Color consoleGray = new Color(28, 32, 38);
+    private Color accentEmerald = new Color(46, 204, 113);
     private Color textSilver = new Color(210, 215, 220);
 
     public AdminCoachesPanel(AdminPanel p) {
@@ -508,18 +489,15 @@ class AdminCoachesPanel extends JPanel {
         setLayout(new BorderLayout());
         setBackground(darkBg);
 
-        // 1. DATA MODEL
         model = new DefaultTableModel(new Object[]{"ID", "Account ID", "Coach Name", "Professional Specialty"}, 0) {
             @Override
             public boolean isCellEditable(int r, int c) { return false; }
         };
 
-        // 2. STYLED TABLE
         tbl = new JTable(model);
         styleCoachTable(tbl);
         refresh();
 
-        // 3. TOP CONTROL CONSOLE (Strictly matches your structure)
         JPanel controlConsole = new JPanel(new BorderLayout());
         controlConsole.setBackground(consoleGray);
         controlConsole.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(55, 60, 70)));
@@ -533,14 +511,12 @@ class AdminCoachesPanel extends JPanel {
         JPanel btnP = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 18));
         btnP.setOpaque(false);
 
-        // Styling existing buttons with staff-specific green accents
         JButton btnAdd = createStaffButton("ADD COACH", accentEmerald);
         JButton btnEdit = createStaffButton("EDIT", new Color(110, 120, 130));
         JButton btnSearch = createStaffButton("SEARCH", new Color(110, 120, 130));
         JButton btnRefresh = createStaffButton("REFRESH", new Color(110, 120, 130));
-        JButton btnDelete = createStaffButton("TERMINATE", new Color(231, 76, 60)); // Red for delete
+        JButton btnDelete = createStaffButton("TERMINATE", new Color(231, 76, 60));
 
-        // Action Links
         btnAdd.addActionListener(e -> addCoach());
         btnEdit.addActionListener(e -> editCoach());
         btnDelete.addActionListener(e -> deleteCoach());
@@ -555,7 +531,6 @@ class AdminCoachesPanel extends JPanel {
 
         controlConsole.add(btnP, BorderLayout.EAST);
 
-        // 4. MAIN SCROLL AREA
         JScrollPane scroll = new JScrollPane(tbl);
         scroll.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         scroll.getViewport().setBackground(darkBg);
@@ -597,7 +572,6 @@ class AdminCoachesPanel extends JPanel {
         return b;
     }
 
-    // --- YOUR LOGIC (Strictly Preserved) ---
 
     void refresh() {
         model.setRowCount(0);
@@ -687,10 +661,9 @@ class AdminBillingPanel extends JPanel {
     JTable tbl;
     DefaultTableModel model;
 
-    // --- Enterprise Dark Palette ---
-    private Color darkBg = new Color(15, 15, 18);         // Deepest Charcoal
-    private Color consoleGray = new Color(25, 28, 32);    // Slate Panel
-    private Color accentGold = new Color(255, 193, 7);    // Financial Gold Glow
+    private Color darkBg = new Color(15, 15, 18);
+    private Color consoleGray = new Color(25, 28, 32);
+    private Color accentGold = new Color(255, 193, 7);
     private Color textSilver = new Color(210, 215, 220);
 
     public AdminBillingPanel(AdminPanel p) {
@@ -698,18 +671,15 @@ class AdminBillingPanel extends JPanel {
         setLayout(new BorderLayout());
         setBackground(darkBg);
 
-        // 1. DATA MODEL
         model = new DefaultTableModel(new Object[]{"TXN ID", "Member ID", "Amount ($)", "Timestamp", "Transaction Note"}, 0) {
             @Override
             public boolean isCellEditable(int r, int c) { return false; }
         };
 
-        // 2. STYLED TABLE
         tbl = new JTable(model);
         styleBillingTable(tbl);
         refresh();
 
-        // 3. TOP CONTROL CONSOLE (Strictly matches your structure)
         JPanel controlConsole = new JPanel(new BorderLayout());
         controlConsole.setBackground(consoleGray);
         controlConsole.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(50, 50, 55)));
@@ -723,7 +693,6 @@ class AdminBillingPanel extends JPanel {
         JPanel top = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 18));
         top.setOpaque(false);
 
-        // Buttons with Gold accents
         JButton btnAdd = createBillingButton("ADD INVOICE", accentGold);
         JButton btnRefresh = createBillingButton("REFRESH", new Color(110, 110, 120));
         JButton btnDelete = createBillingButton("VOID TRANSACTION", new Color(231, 76, 60));
@@ -738,7 +707,6 @@ class AdminBillingPanel extends JPanel {
 
         controlConsole.add(top, BorderLayout.EAST);
 
-        // 4. MAIN SCROLL AREA
         JScrollPane scroll = new JScrollPane(tbl);
         scroll.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         scroll.getViewport().setBackground(darkBg);
@@ -753,7 +721,7 @@ class AdminBillingPanel extends JPanel {
         table.setForeground(textSilver);
         table.setGridColor(new Color(40, 40, 45));
         table.setRowHeight(42);
-        table.setSelectionBackground(new Color(255, 193, 7, 30)); // Subtle gold selection
+        table.setSelectionBackground(new Color(255, 193, 7, 30));
         table.setSelectionForeground(Color.WHITE);
         table.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         table.setShowVerticalLines(false);
@@ -779,8 +747,6 @@ class AdminBillingPanel extends JPanel {
         b.setCursor(new Cursor(Cursor.HAND_CURSOR));
         return b;
     }
-
-    // --- YOUR LOGIC (Strictly Preserved) ---
 
     void refresh() {
         model.setRowCount(0);
@@ -847,23 +813,21 @@ class ReportFrame extends JFrame {
     AdminPanel parent;
     JTextArea textArea;
 
-    // Theme Colors
-    private Color terminalBg = new Color(10, 12, 15);     // Onyx Black
-    private Color textGreen = new Color(50, 255, 150);    // High-vis Green
+    private Color terminalBg = new Color(10, 12, 15);
+    private Color textGreen = new Color(50, 255, 150);
     private Color headerGray = new Color(30, 33, 37);
     private Color accentBlue = new Color(0, 150, 255);
 
     public ReportFrame(String defaultText) {
         setTitle("SYSTEM REPORT GENERATOR");
-        this.setSize(600, 500); // Slightly wider for better readability
+        this.setSize(600, 500);
         this.getContentPane().setBackground(terminalBg);
 
-        // 1. STYLED TEXT AREA (Terminal Style)
         textArea = new JTextArea();
         textArea.setBackground(terminalBg);
         textArea.setForeground(textGreen);
         textArea.setCaretColor(Color.WHITE);
-        textArea.setFont(new Font("Consolas", Font.PLAIN, 14)); // Monospaced font for professional reports
+        textArea.setFont(new Font("Consolas", Font.PLAIN, 14));
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         textArea.setMargin(new Insets(20, 20, 20, 20));
@@ -873,7 +837,6 @@ class ReportFrame extends JFrame {
         scrollPane.setBorder(BorderFactory.createLineBorder(new Color(50, 50, 60)));
         scrollPane.getVerticalScrollBar().setBackground(terminalBg);
 
-        // 2. HEADER LABEL
         JLabel lblHeader = new JLabel("  DOCUMENT PREVIEW");
         lblHeader.setOpaque(true);
         lblHeader.setBackground(headerGray);
@@ -881,12 +844,10 @@ class ReportFrame extends JFrame {
         lblHeader.setFont(new Font("Segoe UI", Font.BOLD, 12));
         lblHeader.setPreferredSize(new Dimension(0, 35));
 
-        // 3. ACTION BUTTON
         JButton saveButton = new JButton("EXPORT TO TEXT FILE (.TXT)");
         styleReportButton(saveButton);
         saveButton.addActionListener(e -> saveReportToFile(textArea));
 
-        // Layout Assembly
         this.getContentPane().setLayout(new BorderLayout());
         this.getContentPane().add(lblHeader, BorderLayout.NORTH);
         this.getContentPane().add(scrollPane, BorderLayout.CENTER);
@@ -906,7 +867,6 @@ class ReportFrame extends JFrame {
         b.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
-    // --- YOUR LOGIC (Strictly Preserved) ---
     private void saveReportToFile(JTextArea textArea) {
         String reportContent = textArea.getText();
         if (reportContent.trim().isEmpty()) {
@@ -953,7 +913,6 @@ class ReportFrame extends JFrame {
 class AdminReportsPanel extends JPanel {
     AdminPanel parent;
 
-    // Theme Colors
     private Color darkBg = new Color(15, 18, 22);
     private Color cardColor = new Color(28, 32, 38);
     private Color accentBlue = new Color(0, 150, 255);
@@ -964,7 +923,6 @@ class AdminReportsPanel extends JPanel {
         setLayout(new BorderLayout());
         setBackground(darkBg);
 
-        // 1. HEADER SECTION
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(cardColor);
         headerPanel.setPreferredSize(new Dimension(0, 75));
@@ -975,22 +933,18 @@ class AdminReportsPanel extends JPanel {
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 14));
         headerPanel.add(lblTitle, BorderLayout.WEST);
 
-        // 2. ACTION GRID (Better structure than a single column)
         JPanel gridContainer = new JPanel(new GridLayout(2, 2, 20, 20));
         gridContainer.setOpaque(false);
         gridContainer.setBorder(new EmptyBorder(40, 40, 40, 40));
 
-        // Styling Buttons as "Action Cards"
         JButton btnMembersCSV = createActionCard("IMPORT REPORT", "Load external .txt data", accentBlue);
         JButton btnExpiring = createActionCard("GENERATE REPORT", "Initialize a new system report", accentPurple);
 
-        // Linking your existing logic
         btnMembersCSV.addActionListener(e -> importReportTXT());
         btnExpiring.addActionListener(e -> makeReport());
 
         gridContainer.add(btnMembersCSV);
         gridContainer.add(btnExpiring);
-        // Placeholders for symmetry (or add more buttons later)
         gridContainer.add(createPlaceholderCard());
         gridContainer.add(createPlaceholderCard());
 
@@ -1016,8 +970,6 @@ class AdminReportsPanel extends JPanel {
         p.setBorder(BorderFactory.createDashedBorder(new Color(40, 45, 50), 5, 5));
         return p;
     }
-
-    // --- YOUR LOGIC (Strictly Preserved) ---
     void importReportTXT() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Select a .txt file to load");
@@ -1048,27 +1000,24 @@ public class AdminPanel extends JFrame {
     AdminCoachesPanel coachesTab;
     AdminBillingPanel billingTab;
 
-    // --- Unified Cyber Palette ---
-    private Color headerDark = new Color(10, 12, 16);    // Near Black
-    private Color tabBg = new Color(25, 28, 35);        // Slate
-    private Color accentBlue = new Color(0, 150, 255);  // Cyber Blue
+    private Color headerDark = new Color(10, 12, 16);
+    private Color tabBg = new Color(25, 28, 35);
+    private Color accentBlue = new Color(0, 150, 255);
     private Color textDim = new Color(160, 165, 175);
 
     public AdminPanel(Admin me) {
         this.me = me;
         setTitle("IRON TEMPLE - GLOBAL ADMINISTRATION");
-        setSize(1100, 750); // Increased size for a more professional feel
+        setSize(1100, 750);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         getContentPane().setBackground(headerDark);
 
-        // 1. INITIALIZE EXISTING TABS
         accountsTab = new AdminAccountsPanel(this);
         membersTab = new AdminMembersPanel(this);
         coachesTab = new AdminCoachesPanel(this);
         billingTab = new AdminBillingPanel(this);
 
-        // 2. STYLED TABBED PANE
         tabs = new JTabbedPane(JTabbedPane.TOP);
         styleTabPane(tabs);
 
@@ -1078,17 +1027,14 @@ public class AdminPanel extends JFrame {
         tabs.addTab("FINANCIALS", billingTab);
         tabs.addTab("ANALYTICS & REPORTS", new AdminReportsPanel(this));
 
-        // 3. TOP NAVIGATION BAR (The "Logout" Strip)
         JPanel topNav = new JPanel(new BorderLayout());
         topNav.setBackground(headerDark);
         topNav.setBorder(new EmptyBorder(10, 20, 10, 20));
 
-        // User Info Section
         JLabel lblUser = new JLabel("<html><span style='color:#555555;'>OPERATOR:</span> <span style='color:#0096FF; font-weight:bold;'>" + me.getName().toUpperCase() + "</span></html>");
         lblUser.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         topNav.add(lblUser, BorderLayout.WEST);
 
-        // Action Section
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 0));
         actions.setOpaque(false);
 
@@ -1099,7 +1045,7 @@ public class AdminPanel extends JFrame {
         actions.add(btnLogout);
         topNav.add(actions, BorderLayout.EAST);
 
-        // ASSEMBLY
+
         add(topNav, BorderLayout.NORTH);
         add(tabs, BorderLayout.CENTER);
     }
@@ -1111,7 +1057,6 @@ public class AdminPanel extends JFrame {
         t.setFocusable(false);
         t.setBorder(BorderFactory.createEmptyBorder());
 
-        // Remove standard borders that create white lines
         UIManager.put("TabbedPane.contentOpaque", false);
         UIManager.put("TabbedPane.borderHighlightColor", headerDark);
         UIManager.put("TabbedPane.darkShadow", headerDark);
@@ -1120,7 +1065,7 @@ public class AdminPanel extends JFrame {
 
     private void styleLogoutButton(JButton b) {
         b.setFont(new Font("Segoe UI", Font.BOLD, 10));
-        b.setForeground(new Color(255, 80, 80)); // Warning Red
+        b.setForeground(new Color(255, 80, 80));
         b.setContentAreaFilled(false);
         b.setFocusPainted(false);
         b.setBorder(BorderFactory.createLineBorder(new Color(255, 80, 80), 1));
@@ -1128,7 +1073,6 @@ public class AdminPanel extends JFrame {
         b.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
-    // --- YOUR LOGIC (Strictly Preserved) ---
     void logout() {
         this.dispose();
         SwingUtilities.invokeLater(() -> {

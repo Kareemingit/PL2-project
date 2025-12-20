@@ -16,7 +16,6 @@ import java.util.List;
 public class MemberPanel extends JFrame {
     private Account member;
 
-    // Theme Colors
     private Color sidebarColor = new Color(33, 37, 41); // Dark Sidebar
     private Color bgColor = new Color(240, 242, 245);    // Light Dashboard background
     private Color accentColor = new Color(52, 152, 219);  // Blue
@@ -28,10 +27,8 @@ public class MemberPanel extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Root Panel
         JPanel root = new JPanel(new BorderLayout());
 
-        // --- 1. SIDEBAR (Format Change: Left-aligned Navigation) ---
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
         sidebar.setPreferredSize(new Dimension(220, 0));
@@ -49,27 +46,26 @@ public class MemberPanel extends JFrame {
         btnLogout.addActionListener(e -> { this.dispose(); new LoginFrame().setVisible(true); });
 
         sidebar.add(lblBrand);
-        sidebar.add(Box.createVerticalGlue()); // Pushes logout to bottom
+        sidebar.add(Box.createVerticalGlue());
         sidebar.add(btnLogout);
 
-        // --- 2. MAIN CONTENT AREA ---
+
         JPanel mainContent = new JPanel(new BorderLayout());
         mainContent.setBackground(bgColor);
         mainContent.setBorder(new EmptyBorder(30, 30, 30, 30));
 
-        // Header Title
+
         JLabel lblHeader = new JLabel("Member Dashboard");
         lblHeader.setFont(new Font("Segoe UI", Font.BOLD, 26));
         mainContent.add(lblHeader, BorderLayout.NORTH);
 
-        // Dashboard Grid (Format Change: Split view instead of a vertical list)
+
         JPanel grid = new JPanel(new GridBagLayout());
         grid.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
         gbc.insets = new Insets(10, 10, 10, 10);
 
-        // Row 1: Status Cards
         String subEnd = fetchSubscriptionEndDate();
         String coachName = fetchCoachName();
 
@@ -79,7 +75,6 @@ public class MemberPanel extends JFrame {
         gbc.gridx = 1;
         grid.add(createStatCard("PERSONAL COACH", coachName, accentColor), gbc);
 
-        // Row 2: Content Modules (Side-by-Side Boxes)
         gbc.gridy = 1; gbc.gridx = 0; gbc.weighty = 0.85;
         JTextArea txtPlan = createModuleTextArea("Your Training Plan");
         loadPlan(txtPlan);
@@ -93,7 +88,6 @@ public class MemberPanel extends JFrame {
 
         mainContent.add(grid, BorderLayout.CENTER);
 
-        // Final Assembly
         root.add(sidebar, BorderLayout.WEST);
         root.add(mainContent, BorderLayout.CENTER);
         add(root);
@@ -101,7 +95,6 @@ public class MemberPanel extends JFrame {
         if (!subEnd.equals("N/A")) checkSubscriptionStatus(subEnd);
     }
 
-    // --- Format Helper: Stat Cards ---
     private JPanel createStatCard(String title, String value, Color accent) {
         JPanel card = new JPanel(new BorderLayout());
         card.setBackground(Color.WHITE);
@@ -122,7 +115,6 @@ public class MemberPanel extends JFrame {
         return card;
     }
 
-    // --- Format Helper: Module Boxes ---
     private JTextArea createModuleTextArea(String title) {
         JTextArea area = new JTextArea();
         area.setEditable(false);
@@ -131,7 +123,6 @@ public class MemberPanel extends JFrame {
         area.setWrapStyleWord(true);
         area.setMargin(new Insets(10,10,10,10));
 
-        // This gives the "Box" a title inside the dashboard
         area.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createEmptyBorder(5, 5, 5, 5), title,
                 0, 0, new Font("Segoe UI", Font.BOLD, 14), sidebarColor));
@@ -148,7 +139,6 @@ public class MemberPanel extends JFrame {
         b.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
-    // --- LOGIC METHODS (Kept from your original) ---
 
     private String fetchSubscriptionEndDate() {
         ArrayList<ArrayList<String>> membersData = Database.readMembers();

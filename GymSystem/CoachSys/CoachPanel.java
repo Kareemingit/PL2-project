@@ -17,7 +17,6 @@ public class CoachPanel extends JFrame {
     private JTextField txtEndDate;
     private JTextArea txtMessageContent;
 
-    // Panel switching
     private CardLayout cardLayout = new CardLayout();
     private JPanel centerPanel = new JPanel(cardLayout);
 
@@ -29,7 +28,6 @@ public class CoachPanel extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // --- SIDEBAR (Modern Structural Change) ---
         JPanel sidebar = new JPanel();
         sidebar.setBackground(new Color(33, 37, 41));
         sidebar.setPreferredSize(new Dimension(200, 0));
@@ -48,11 +46,9 @@ public class CoachPanel extends JFrame {
         sidebar.add(btnShowMsg);
         sidebar.add(btnLogout);
 
-        // --- CONTENT MODULES ---
         centerPanel.add(createPlanPanel(), "PLAN");
         centerPanel.add(createMessagePanel(), "MSG");
 
-        // --- LISTENERS (Linking to your existing methods) ---
         btnShowPlan.addActionListener(e -> cardLayout.show(centerPanel, "PLAN"));
         btnShowMsg.addActionListener(e -> cardLayout.show(centerPanel, "MSG"));
         btnLogout.addActionListener(e -> {
@@ -69,7 +65,6 @@ public class CoachPanel extends JFrame {
         panel.setBorder(new EmptyBorder(30, 30, 30, 30));
         panel.setBackground(new Color(245, 245, 245));
 
-        // Form Card
         JPanel card = new JPanel(new GridLayout(6, 2, 10, 10));
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createCompoundBorder(
@@ -90,7 +85,7 @@ public class CoachPanel extends JFrame {
         txtEndDate = new JTextField(LocalDate.now().plusMonths(1).toString());
         card.add(txtEndDate);
 
-        // Plan Details
+
         JPanel planDetailPanel = new JPanel(new BorderLayout(5, 5));
         planDetailPanel.setOpaque(false);
         planDetailPanel.add(new JLabel("Plan Details:"), BorderLayout.NORTH);
@@ -137,7 +132,6 @@ public class CoachPanel extends JFrame {
         return panel;
     }
 
-    // --- YOUR ORIGINAL LOGIC (Unchanged) ---
     private void loadMembers() {
         ArrayList<ArrayList<String>> members = Database.readMembers();
         for (ArrayList<String> m : members) {

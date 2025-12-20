@@ -15,7 +15,6 @@ public class LoginFrame extends JFrame {
     private JTextField txtUser;
     private JPasswordField txtPass;
 
-    // Modern Color Palette
     private Color darkBg = new Color(18, 22, 33);
     private Color sidebarBlue = new Color(52, 152, 219);
     private Color inputBg = new Color(42, 46, 60);
@@ -27,28 +26,23 @@ public class LoginFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Root Container
         JPanel mainPanel = new JPanel(new GridLayout(1, 2));
         mainPanel.setBackground(darkBg);
 
-        // --- 1. LEFT SIDE: BRANDING PANEL ---
         JPanel brandPanel = new JPanel(new GridBagLayout());
         brandPanel.setBackground(sidebarBlue);
 
-        // Visual Brand Elements
         JLabel lblLogoIcon = new JLabel("<html><div style='text-align: center;'>🏋️<br><br><span style='font-size: 24px;'>FCAIH GYM</span><br><span style='font-size: 12px; font-weight: normal; color: #D1EAFF;'>GYM MANAGEMENT SYSTEM  </span></div></html>");
         lblLogoIcon.setForeground(Color.WHITE);
         lblLogoIcon.setFont(new Font("Segoe UI", Font.BOLD, 48));
         brandPanel.add(lblLogoIcon);
 
-        // --- 2. RIGHT SIDE: LOGIN FORM PANEL ---
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBackground(darkBg);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(10, 50, 10, 50);
 
-        // Welcome Header
         JLabel lblLoginTitle = new JLabel("Welcome Back");
         lblLoginTitle.setFont(new Font("Segoe UI", Font.BOLD, 28));
         lblLoginTitle.setForeground(Color.WHITE);
@@ -61,7 +55,6 @@ public class LoginFrame extends JFrame {
         gbc.gridy = 1;
         formPanel.add(lblSub, gbc);
 
-        // Input Fields
         gbc.gridwidth = 2; gbc.insets = new Insets(25, 50, 5, 50);
         gbc.gridy = 2;
         formPanel.add(createLabel("USERNAME"), gbc);
@@ -77,7 +70,6 @@ public class LoginFrame extends JFrame {
         gbc.gridy = 5;
         formPanel.add(txtPass, gbc);
 
-        // Action Buttons
         JButton btnLogin = new JButton("LOGIN");
         stylePrimaryButton(btnLogin);
         gbc.gridy = 6; gbc.insets = new Insets(30, 50, 10, 50);
@@ -88,19 +80,15 @@ public class LoginFrame extends JFrame {
         gbc.gridy = 7; gbc.insets = new Insets(0, 50, 10, 50);
         formPanel.add(btnExit, gbc);
 
-        // Assemble
         mainPanel.add(brandPanel);
         mainPanel.add(formPanel);
         add(mainPanel);
 
-        // Logic Listeners
         btnLogin.addActionListener(e -> doLogin());
         btnExit.addActionListener(e -> System.exit(0));
         txtPass.addActionListener(e -> doLogin());
         txtUser.addActionListener(e -> txtPass.requestFocusInWindow());
     }
-
-    // --- Styling Helpers ---
     private JLabel createLabel(String text) {
         JLabel l = new JLabel(text);
         l.setFont(new Font("Segoe UI", Font.BOLD, 11));
@@ -154,7 +142,6 @@ public class LoginFrame extends JFrame {
         b.setFont(new Font("Segoe UI", Font.PLAIN, 12));
     }
 
-    // ---------- AUTHENTICATION & NAVIGATION LOGIC ----------
 
     private ArrayList<String> authenticate(String username, String password) {
         ArrayList<ArrayList<String>> accounts = Database.readAccounts();
@@ -181,7 +168,6 @@ public class LoginFrame extends JFrame {
         }
 
         try {
-            // Standardize Role string
             SRole accountRole = SRole.valueOf(a.get(3).trim().toUpperCase());
 
             switch (accountRole) {
